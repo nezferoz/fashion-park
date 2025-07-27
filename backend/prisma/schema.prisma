@@ -1,0 +1,282 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+// ================================================= //
+//                 USER & AUTHENTICATION             //
+// ================================================= //
+model User {
+  userId          Int               @id @default(autoincrement())
+  name            String
+  email           String            @unique
+  password        String
+  phone           String?
+  address         String?           @db.Text
+  role            Role              @default(PELANGGAN)
+  isActive        Boolean           @default(true)
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+  
+  // Relations
+  transactions    Transaction[]     @relation("CustomerTransactions")
+  cashierTransactions Transaction[] @relation("CashierTransactions")
+  stockMovements  StockMovement[]
+  cartItems       Cart[]
+  passwordResets  PasswordReset[]
+  notifications   Notification[]
+  refunds         Refund[]          @relation("InitiatedBy")
+  approvedRefunds Refund[]          @relation("ApprovedBy")
+
+
+  @@map("users")
+}
+
+model PasswordReset {
+  email     String   @id
+  token     String
+  expires   BigInt
+  
+  user      User     @relation(fields: [email], references: [email])
+
+  @@map("password_resets")
+}
+
+enum Role {
+  ADMIN
+  KASIR
+  PEMILIK
+  PELANGGAN
+}
+
+// ================================================= //
+//                 PRODUCT & INVENTORY               //
+// ================================================= //
+model Category {
+  categoryId   Int        @id @default(autoincrement())
+  categoryName String
+  description  String?    @db.Text
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+
+  // Relations
+  products     Product[]
+
+  @@map("categories")
+}
+
+model Product {
+  productId    Int        @id @default(autoincrement())
+  productName  String
+  description  String?    @db.Text
+  price        Decimal    @db.Decimal(12, 2)
+  barcode      String?
+  imageUrl     String?
+  isActive     Boolean    @default(true)
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+
+  // Relations
+  categoryId   Int?
+  category     Category?  @relation(fields: [categoryId], references: [categoryId], onDelete: SetNull)
+  
+  variants     ProductVariant[]
+  images       ProductImage[]
+  stockMovements StockMovement[]
+  transactionDetails TransactionDetail[]
+  cartItems    Cart[]
+
+  @@map("products")
+}
+
+model ProductVariant {
+  variantId    Int      @id @default(autoincrement())
+  size         String?
+  stockQuantity Int
+  barcode      String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  
+  // Relations
+  productId    Int
+  product      Product  @relation(fields: [productId], references: [productId], onDelete: Cascade)
+  
+  cartItems    Cart[]
+
+  @@map("product_variants")
+}
+
+model ProductImage {
+  imageId   Int      @id @default(autoincrement())
+  imageUrl  String   
+  createdAt DateTime @default(now())
+
+  // Relations
+  productId Int
+  product   Product  @relation(fields: [productId], references: [productId], onDelete: Cascade)
+
+  @@map("product_images")
+}
+
+
+model StockMovement {
+  movementId   Int           @id @default(autoincrement())
+  movementType MovementType
+  quantity     Int
+  notes        String?       @db.Text
+  movementDate DateTime      @default(now())
+  createdAt    DateTime      @default(now())
+
+  // Relations
+  productId    Int?
+  product      Product?      @relation(fields: [productId], references: [productId], onDelete: SetNull)
+  userId       Int?
+  user         User?         @relation(fields: [userId], references: [userId], onDelete: SetNull)
+
+  @@map("stock_movements")
+}
+
+enum MovementType {
+  IN
+  OUT
+  ADJUSTMENT
+}
+
+// ================================================= //
+//              TRANSACTION & PAYMENTS               //
+// ================================================= //
+
+model Transaction {
+  transactionId   Int             @id @default(autoincrement())
+  transactionCode String
+  totalAmount     Decimal         @db.Decimal(12, 2)
+  discount        Decimal?        @default(0) @db.Decimal(12, 2)
+  finalAmount     Decimal         @db.Decimal(12, 2)
+  paymentMethod   PaymentMethod
+  paymentStatus   PaymentStatus   @default(PENDING)
+  paymentReference String?
+  transactionDate DateTime        @default(now())
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+
+  // Relations
+  userId          Int?
+  user            User?           @relation("CustomerTransactions", fields: [userId], references: [userId], onDelete: SetNull)
+  cashierId       Int?
+  cashier         User?           @relation("CashierTransactions", fields: [cashierId], references: [userId], onDelete: SetNull)
+  
+  details         TransactionDetail[]
+  refunds         Refund[]
+
+  @@map("transactions")
+}
+
+model TransactionDetail {
+  detailId     Int      @id @default(autoincrement())
+  quantity     Int
+  unitPrice    Decimal  @db.Decimal(12, 2)
+  subtotal     Decimal  @db.Decimal(12, 2)
+  createdAt    DateTime @default(now())
+
+  // Relations
+  transactionId Int
+  transaction   Transaction @relation(fields: [transactionId], references: [transactionId], onDelete: Cascade)
+  productId     Int?
+  product       Product?    @relation(fields: [productId], references: [productId], onDelete: SetNull)
+
+  @@map("transaction_details")
+}
+
+model Refund {
+  refundId      Int          @id @default(autoincrement())
+  reason        String       @db.Text
+  status        RefundStatus @default(PENDING)
+  amount        Decimal      @db.Decimal(12, 2)
+  initiatedAt   DateTime     @default(now())
+  approvedAt    DateTime?
+  
+  // Relations
+  transactionId Int
+  transaction   Transaction  @relation(fields: [transactionId], references: [transactionId])
+  initiatedById Int
+  initiatedBy   User         @relation("InitiatedBy", fields: [initiatedById], references: [userId])
+  approvedById  Int?
+  approvedBy    User?        @relation("ApprovedBy", fields: [approvedById], references: [userId])
+
+  @@map("refunds")
+}
+
+
+enum PaymentMethod {
+  CASH
+  DIGITAL
+  QRIS
+}
+
+enum PaymentStatus {
+  PENDING
+  SUCCESS
+  FAILED
+}
+
+enum RefundStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+// ================================================= //
+//                       CART                        //
+// ================================================= //
+
+model Cart {
+  cartId    Int       @id @default(autoincrement())
+  quantity  Int
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  // Relations
+  userId    Int
+  user      User      @relation(fields: [userId], references: [userId], onDelete: Cascade)
+  productId Int
+  product   Product   @relation(fields: [productId], references: [productId], onDelete: Cascade)
+  variantId Int?
+  variant   ProductVariant? @relation(fields: [variantId], references: [variantId])
+
+  @@map("cart")
+}
+
+// ================================================= //
+//                 OTHERS & UTILITIES                //
+// ================================================= //
+
+model Notification {
+  notificationId Int      @id @default(autoincrement())
+  message        String
+  type           String   @default("info")
+  isRead         Boolean  @default(false)
+  createdAt      DateTime @default(now())
+  
+  // Relations
+  userId         Int
+  user           User     @relation(fields: [userId], references: [userId], onDelete: Cascade)
+
+  @@map("notifications")
+}
+
+model SystemSetting {
+  id        String @id @default(uuid())
+  key       String @unique
+  value     String @db.Text
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  @@map("system_settings")
+}
