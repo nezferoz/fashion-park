@@ -1,0 +1,50 @@
+services:
+  # Backend API Service
+  - type: web
+    name: fashion-park-backend
+    env: node
+    plan: free
+    buildCommand: cd backend && npm install && npx prisma generate
+    startCommand: cd backend && npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 10000
+      - key: JWT_SECRET
+        generateValue: true
+      - key: JWT_EXPIRES_IN
+        value: 24h
+      - key: BCRYPT_ROUNDS
+        value: 12
+      - key: CORS_ORIGIN
+        value: "*"
+      - key: MAX_FILE_SIZE
+        value: 5242880
+      - key: UPLOAD_PATH
+        value: ./uploads
+      - key: LOG_LEVEL
+        value: info
+    healthCheckPath: /health
+    autoDeploy: true
+
+  # MySQL Database
+  - type: mysql
+    name: fashion-park-db
+    plan: free
+    ipAllowList: []
+    maxConnections: 20
+    maintenanceWindow: sunday:00:00
+    version: 8.0
+
+  # Frontend (Optional)
+  - type: web
+    name: fashion-park-frontend
+    env: static
+    plan: free
+    buildCommand: cd frontend && npm install && npm run build
+    staticPublishPath: frontend/build
+    envVars:
+      - key: REACT_APP_API_URL
+        value: https://fashion-park-backend.onrender.com
+    autoDeploy: true
