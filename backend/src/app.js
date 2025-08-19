@@ -1,15 +1,40 @@
 const express = require('express');
 const cors = require('cors');
-require('dotenv').config();
+require('dotenv').config({ path: './config.env' });
 
 const app = express();
 
-app.use(cors({
-  origin: 'http://localhost:3000',
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization'],
-  credentials: true
-}));
+// CORS configuration with logging
+const corsOptions = {
+  origin: function (origin, callback) {
+    console.log('CORS request from origin:', origin);
+    
+    // Allow requests with no origin (like mobile apps or curl requests)
+    if (!origin) return callback(null, true);
+    
+    // Allow ngrok domains
+    if (origin.match(/\.ngrok-free\.app$/)) {
+      console.log('CORS: Allowing ngrok domain:', origin);
+      return callback(null, true);
+    }
+    
+    // Allow localhost
+    if (origin === 'http://localhost:3000' || origin === 'https://localhost:3000') {
+      console.log('CORS: Allowing localhost:', origin);
+      return callback(null, true);
+    }
+    
+    console.log('CORS: Blocking origin:', origin);
+    return callback(new Error('Not allowed by CORS'));
+  },
+  credentials: true,
+  methods: ['GET','HEAD','PUT','PATCH','POST','DELETE','OPTIONS'],
+  allowedHeaders: ['Content-Type','Authorization','ngrok-skip-browser-warning','X-Requested-With']
+};
+
+app.use(cors(corsOptions));
+// Note: In Express 5, '*' in route paths is invalid for path-to-regexp.
+// Preflight requests are already handled by the CORS middleware above.
 app.use(express.json());
 
 // Global request logger
@@ -24,21 +49,39 @@ app.use((err, req, res, next) => {
   res.status(500).json({ message: 'Internal Server Error', error: err.message });
 });
 
+// Import routes
+const authRoutes = require('./routes/authRoutesSimple'); // Gunakan routes sederhana
+const userRoutes = require('./routes/userRoutes');
+const productRoutes = require('./routes/productRoutes');
+const cartRoutes = require('./routes/cartRoutes');
+const transactionRoutes = require('./routes/transactionRoutes');
+const categoryRoutes = require('./routes/categoryRoutes');
+const rajaongkirRoutes = require('./routes/rajaongkirRoutes');
+const binderbyteRoutes = require('./routes/binderbyteRoutes');
+const reportRoutes = require('./routes/reportRoutes');
+const stockMovementRoutes = require('./routes/stockMovementRoutes');
+const notificationRoutes = require('./routes/notificationRoutes');
+const paymentLogRoutes = require('./routes/paymentLogRoutes');
+const apiKeyRoutes = require('./routes/apiKeyRoutes');
+
 // Routes
-app.use('/api/auth', require('./routes/authRoutes'));
-app.use('/api/users', require('./routes/userRoutes'));
-app.use('/api/categories', require('./routes/categoryRoutes'));
-app.use('/api/products', require('./routes/productRoutes'));
-app.use('/api/transactions', require('./routes/transactionRoutes'));
+app.use('/api/auth', authRoutes);
+app.use('/api/users', userRoutes);
+app.use('/api/categories', categoryRoutes);
+app.use('/api/products', productRoutes);
+app.use('/api/transactions', transactionRoutes);
 app.use('/api/transaction-details', require('./routes/transactionDetailRoutes'));
-app.use('/api/reports', require('./routes/reportRoutes'));
-app.use('/api/cart', require('./routes/cartRoutes'));
-app.use('/api/payment-logs', require('./routes/paymentLogRoutes'));
-app.use('/api/notifications', require('./routes/notificationRoutes'));
-app.use('/api/stock-movements', require('./routes/stockMovementRoutes'));
+app.use('/api/reports', reportRoutes);
+app.use('/api/cart', cartRoutes);
+app.use('/api/payment-logs', paymentLogRoutes);
+app.use('/api/notifications', notificationRoutes);
+app.use('/api/stock-movements', stockMovementRoutes);
 app.use('/api/payment', require('./routes/paymentRoutes'));
 app.use('/api/shipping', require('./routes/shippingRoutes'));
-app.use('/api/rajaongkir', require('./routes/rajaongkirRoutes'));
+app.use('/api/rajaongkir', rajaongkirRoutes);
+app.use('/api/binderbyte', binderbyteRoutes);
+app.use('/api/api-keys', apiKeyRoutes);
+
 
 // Routing dasar
 app.get('/', (req, res) => {

@@ -3,15 +3,36 @@ const productModel = require('./productModel');
 
 const getCartByUserId = async (user_id) => {
   const [rows] = await db.query(
-    `SELECT c.*, p.product_name, p.price, v.size, v.stock_quantity,
-      (SELECT image_id FROM product_images WHERE product_id = p.product_id LIMIT 1) as image_id
+    `SELECT c.*, p.product_name, p.price, p.weight, p.category_id,
+      cat.category_name,
+      v.size, v.stock_quantity, v.variant_id,
+      (SELECT image_id FROM product_images WHERE product_id = p.product_id ORDER BY image_id ASC LIMIT 1) as main_image_id,
+      (SELECT COUNT(*) FROM product_images WHERE product_id = p.product_id) as image_count
      FROM cart c 
      JOIN products p ON c.product_id = p.product_id 
+     JOIN categories cat ON p.category_id = cat.category_id
      JOIN product_variants v ON c.variant_id = v.variant_id 
      WHERE c.user_id = ?`,
     [user_id]
   );
-  return rows;
+  
+  // Transform data untuk frontend
+  return rows.map(row => ({
+    ...row,
+    image_id: row.main_image_id, // Keep backward compatibility
+    main_image_id: row.main_image_id,
+    has_images: (row.image_count || 0) > 0,
+    // Ensure all required fields are present
+    product_id: row.product_id,
+    variant_id: row.variant_id,
+    quantity: row.quantity,
+    price: row.price,
+    product_name: row.product_name,
+    category_name: row.category_name,
+    size: row.size,
+    weight: row.weight,
+    stock_quantity: row.stock_quantity
+  }));
 };
 
 const addOrUpdateCart = async (user_id, product_id, variant_id, quantity) => {

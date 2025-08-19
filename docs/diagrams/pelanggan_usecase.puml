@@ -1,0 +1,138 @@
+@startuml
+left to right direction
+skinparam actorStyle awesome
+skinparam usecase {
+  BackgroundColor LightSalmon
+  BorderColor DarkSalmon
+  FontColor Black
+}
+skinparam rectangle {
+  BackgroundColor LightYellow
+  BorderColor DarkOrange
+}
+skinparam actor {
+  BackgroundColor LightGreen
+  BorderColor DarkGreen
+}
+skinparam package {
+  BackgroundColor LightGray
+  BorderColor DarkGray
+}
+
+actor "Pelanggan" as Customer
+
+rectangle "Sistem Fashion Park" {
+  
+  package "Registrasi" {
+    usecase "Registrasi" as Reg
+    usecase "Input Data Pribadi" as Reg_Data
+    usecase "Verifikasi Email" as Reg_Verify
+    usecase "Set Password" as Reg_SetPass
+    usecase "Upload Foto (opsional)" as Reg_Upload
+    usecase "Set Alamat" as Reg_Address
+  }
+
+  package "Lihat Katalog" {
+    usecase "Lihat Katalog" as Catalog
+    usecase "Browse Produk" as Cat_Browse
+    usecase "Filter Kategori" as Cat_FilterCat
+    usecase "Filter Harga" as Cat_FilterPrice
+    usecase "Filter Ukuran" as Cat_FilterSize
+    usecase "Filter Warna" as Cat_FilterColor
+    usecase "Sorting" as Cat_Sort
+  }
+
+  package "Shopping Cart" {
+    usecase "Shopping Cart" as Cart
+    usecase "Tambah ke Cart" as Cart_Add
+    usecase "Update Quantity" as Cart_Update
+    usecase "Hapus Produk" as Cart_Remove
+    usecase "Lihat Cart" as Cart_View
+    usecase "Save Cart" as Cart_Save
+    usecase "Clear Cart" as Cart_Clear
+  }
+
+  package "Checkout & Pembayaran" {
+    usecase "Checkout & Pembayaran" as Checkout
+    usecase "Review Order" as CO_Review
+    usecase "Input Alamat" as CO_Address
+    usecase "Pilih Kurir" as CO_Courier
+    usecase "Pilih Metode Pembayaran" as CO_PayMethod
+    usecase "Konfirmasi Pembayaran" as CO_Confirm
+    usecase "Proses Pembayaran" as CO_Process
+  }
+
+  package "Tracking Pesanan" {
+    usecase "Tracking Pesanan" as Track
+    usecase "Status Pesanan" as Track_Status
+    usecase "Estimasi Pengiriman" as Track_Estimate
+    usecase "History Status" as Track_History
+    usecase "Kontak Kurir" as Track_Courier
+    usecase "Update Status / Notifikasi" as Track_Notify
+  }
+
+  package "Lihat Riwayat Belanja" {
+    usecase "Lihat Riwayat Belanja" as RHistory
+    usecase "Riwayat Transaksi" as RH_List
+    usecase "Detail Transaksi" as RH_Detail
+    usecase "Status Pembayaran" as RH_PayStatus
+    usecase "Download Invoice" as RH_Invoice
+    usecase "Review Produk" as RH_Review
+  }
+
+  ' Registration Relationships
+  Reg .> Reg_Data : <<include>>
+  Reg .> Reg_Verify : <<include>>
+  Reg .> Reg_SetPass : <<include>>
+  Reg .> Reg_Upload : <<include>>
+  Reg .> Reg_Address : <<include>>
+
+  ' Catalog Relationships
+  Catalog .> Cat_Browse : <<include>>
+  Catalog .> Cat_FilterCat : <<include>>
+  Catalog .> Cat_FilterPrice : <<include>>
+  Catalog .> Cat_FilterSize : <<include>>
+  Catalog .> Cat_FilterColor : <<include>>
+  Catalog .> Cat_Sort : <<include>>
+
+  ' Cart Relationships
+  Cart .> Cart_Add : <<include>>
+  Cart .> Cart_Update : <<include>>
+  Cart .> Cart_Remove : <<include>>
+  Cart .> Cart_View : <<include>>
+  Cart .> Cart_Save : <<include>>
+  Cart .> Cart_Clear : <<include>>
+
+  ' Checkout Relationships
+  Checkout .> CO_Review : <<include>>
+  Checkout .> CO_Address : <<include>>
+  Checkout .> CO_Courier : <<include>>
+  Checkout .> CO_PayMethod : <<include>>
+  Checkout .> CO_Confirm : <<include>>
+  Checkout .> CO_Process : <<include>>
+
+  ' Tracking Relationships
+  Track .> Track_Status : <<include>>
+  Track .> Track_Estimate : <<include>>
+  Track .> Track_History : <<include>>
+  Track .> Track_Courier : <<include>>
+  Track .> Track_Notify : <<include>>
+
+  ' History Relationships
+  RHistory .> RH_List : <<include>>
+  RHistory .> RH_Detail : <<include>>
+  RHistory .> RH_PayStatus : <<include>>
+  RHistory .> RH_Invoice : <<include>>
+  RHistory .> RH_Review : <<include>>
+}
+
+' Main Actor Connections
+Customer --> Reg
+Customer --> Catalog
+Customer --> Cart
+Customer --> Checkout
+Customer --> Track
+Customer --> RHistory
+
+title "Use Case Diagram - Pelanggan (Customer)\nSistem Fashion Park"
+@enduml

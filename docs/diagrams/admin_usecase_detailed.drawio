@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mxfile host="app.diagrams.net" modified="2024-01-01T00:00:00.000Z" agent="5.0" etag="xxx" version="22.1.16" type="device">
+  <diagram name="Admin Use Case" id="admin-usecase">
+    <mxGraphModel dx="1422" dy="794" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1169" pageHeight="827" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        
+        <!-- Title -->
+        <mxCell id="title" value="USE CASE DIAGRAM - ADMIN&#xa;SISTEM FASHION PARK" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=16;fontStyle=1;fontColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="400" y="20" width="350" height="40" as="geometry" />
+        </mxCell>
+        
+        <!-- Actor -->
+        <mxCell id="actor" value="ADMIN" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=1;outlineConnect=0;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+          <mxGeometry x="50" y="100" width="30" height="60" as="geometry" />
+        </mxCell>
+        
+        <!-- System Boundary -->
+        <mxCell id="system" value="SISTEM FASHION PARK" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=14;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="150" y="80" width="950" height="700" as="geometry" />
+        </mxCell>
+        
+        <!-- Dashboard Statistik Package -->
+        <mxCell id="stats_package" value="Dashboard Statistik" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=12;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="180" y="120" width="200" height="200" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="stats_main" value="Dashboard Statistik" style="ellipse;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="200" y="150" width="160" height="40" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="stats_user" value="Statistik User&#xa;• Total user&#xa;• User aktif&#xa;• User baru" style="ellipse;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=9;" vertex="1" parent="1">
+          <mxGeometry x="190" y="210" width="120" height="60" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="stats_product" value="Statistik Produk&#xa;• Jumlah produk&#xa;• Stok menipis&#xa;• Produk habis" style="ellipse;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=9;" vertex="1" parent="1">
+          <mxGeometry x="250" y="210" width="120" height="60" as="geometry" />
+        </mxCell>
+        
+        <!-- Kelola Pesanan Package -->
+        <mxCell id="order_package" value="Kelola Pesanan" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=12;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="420" y="120" width="200" height="200" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="order_main" value="Kelola Pesanan" style="ellipse;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="440" y="150" width="160" height="40" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="order_list" value="Lihat Daftar Pesanan&#xa;• Semua pesanan&#xa;• Status terkini" style="ellipse;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=9;" vertex="1" parent="1">
+          <mxGeometry x="430" y="210" width="120" height="60" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="order_status" value="Update Status Pesanan&#xa;• Pending → Processing&#xa;• Shipped → Delivered" style="ellipse;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=9;" vertex="1" parent="1">
+          <mxGeometry x="490" y="210" width="120" height="60" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="order_cancel" value="Cancel Pesanan&#xa;• Pesanan tidak bisa&#xa;• Diproses" style="ellipse;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=9;" vertex="1" parent="1">
+          <mxGeometry x="430" y="280" width="120" height="60" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="order_refund" value="Refund Pesanan&#xa;• Pesanan bermasalah&#xa;• Proses refund" style="ellipse;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=9;" vertex="1" parent="1">
+          <mxGeometry x="490" y="280" width="120" height="60" as="geometry" />
+        </mxCell>
+        
+        <!-- Kelola User Package -->
+        <mxCell id="user_package" value="Kelola User" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=12;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="660" y="120" width="200" height="200" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="user_main" value="Kelola User" style="ellipse;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="680" y="150" width="160" height="40" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="user_list" value="Lihat Daftar User&#xa;• Semua user&#xa;• Role dan status" style="ellipse;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=9;" vertex="1" parent="1">
+          <mxGeometry x="670" y="210" width="120" height="60" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="user_add" value="Tambah User Baru&#xa;• Kasir&#xa;• Admin" style="ellipse;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=9;" vertex="1" parent="1">
+          <mxGeometry x="730" y="210" width="120" height="60" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="user_edit" value="Edit Data User&#xa;• Nama, email&#xa;• Role" style="ellipse;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=9;" vertex="1" parent="1">
+          <mxGeometry x="670" y="280" width="120" height="60" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="user_reset" value="Reset Password User&#xa;• User lupa password&#xa;• Reset otomatis" style="ellipse;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=9;" vertex="1" parent="1">
+          <mxGeometry x="730" y="280" width="120" height="60" as="geometry" />
+        </mxCell>
+        
+        <!-- Kelola Kategori Package -->
+        <mxCell id="category_package" value="Kelola Kategori" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=12;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="900" y="120" width="200" height="200" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="category_main" value="Kelola Kategori" style="ellipse;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="920" y="150" width="160" height="40" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="category_list" value="Lihat Daftar Kategori&#xa;• Semua kategori&#xa;• Produk" style="ellipse;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=9;" vertex="1" parent="1">
+          <mxGeometry x="910" y="210" width="120" height="60" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="category_add" value="Tambah Kategori Baru&#xa;• Nama kategori&#xa;• Deskripsi" style="ellipse;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=9;" vertex="1" parent="1">
+          <mxGeometry x="970" y="210" width="120" height="60" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="category_edit" value="Edit Kategori&#xa;• Nama&#xa;• Deskripsi" style="ellipse;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=9;" vertex="1" parent="1">
+          <mxGeometry x="910" y="280" width="120" height="60" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="category_delete" value="Hapus Kategori&#xa;• Kategori tidak&#xa;• Digunakan" style="ellipse;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=9;" vertex="1" parent="1">
+          <mxGeometry x="970" y="280" width="120" height="60" as="geometry" />
+        </mxCell>
+        
+        <!-- Connections -->
+        <!-- Actor to main use cases -->
+        <mxCell id="conn1" value="" style="endArrow=classic;html=1;rounded=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="actor" target="stats_main">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="400" y="400" as="sourcePoint" />
+            <mxPoint x="450" y="350" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        
+        <mxCell id="conn2" value="" style="endArrow=classic;html=1;rounded=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="actor" target="order_main">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="400" y="400" as="sourcePoint" />
+            <mxPoint x="450" y="350" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        
+        <mxCell id="conn3" value="" style="endArrow=classic;html=1;rounded=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="actor" target="user_main">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="400" y="400" as="sourcePoint" />
+            <mxPoint x="450" y="350" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        
+        <mxCell id="conn4" value="" style="endArrow=classic;html=1;rounded=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="actor" target="category_main">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="400" y="400" as="sourcePoint" />
+            <mxPoint x="450" y="350" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        
+        <!-- Legend -->
+        <mxCell id="legend" value="LEGENDA:&#xa;• Package: Kelompok fitur&#xa;• Use Case: Fitur utama&#xa;• Sub-Use Case: Detail aktivitas&#xa;• Include: Relasi wajib" style="text;html=1;strokeColor=#666666;fillColor=#f5f5f5;align=left;verticalAlign=top;whiteSpace=wrap;rounded=1;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="180" y="650" width="200" height="100" as="geometry" />
+        </mxCell>
+        
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

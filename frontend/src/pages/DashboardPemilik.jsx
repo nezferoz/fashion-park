@@ -33,7 +33,7 @@ const DashboardPemilik = () => {
           <>
             <div className="mb-6 flex flex-wrap gap-8 items-center">
               <div className="bg-blue-100 text-blue-800 rounded-lg px-6 py-4 font-bold text-xl shadow">
-                Total Omzet: Rp{totalOmzet.toLocaleString()}
+                Total Omzet: Rp{Number(totalOmzet).toLocaleString('id-ID')}
               </div>
               <div className="bg-green-100 text-green-800 rounded-lg px-6 py-4 font-bold text-xl shadow">
                 Total Transaksi: {totalTransaksi}

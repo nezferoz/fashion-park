@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Routing Fashion Park</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .test-link { display: inline-block; margin: 10px; padding: 10px 20px; background: #007bff; color: white; text-decoration: none; border-radius: 5px; }
+        .test-link:hover { background: #0056b3; }
+        .info { background: #f8f9fa; padding: 15px; border-radius: 5px; margin: 20px 0; }
+    </style>
+</head>
+<body>
+    <h1>🧪 Test Routing Fashion Park</h1>
+    
+    <div class="info">
+        <h3>📋 Status Saat Ini:</h3>
+        <p><strong>Frontend:</strong> localhost:3000</p>
+        <p><strong>Backend:</strong> localhost:5000</p>
+        <p><strong>User Role:</strong> <span id="userRole">Loading...</span></p>
+        <p><strong>Token:</strong> <span id="tokenStatus">Loading...</span></p>
+    </div>
+
+    <h3>🔗 Test Links:</h3>
+    <a href="http://localhost:3000/cart" class="test-link" target="_blank">🛒 Test Cart Page</a>
+    <a href="http://localhost:3000/pelanggan/profile" class="test-link" target="_blank">👤 Test Profile Page</a>
+    <a href="http://localhost:3000/katalog" class="test-link" target="_blank">🛍️ Test Katalog Page</a>
+    <a href="http://localhost:3000/" class="test-link" target="_blank">🏠 Test Home Page</a>
+
+    <h3>🔐 Test Auth:</h3>
+    <a href="http://localhost:3000/login" class="test-link" target="_blank">🔑 Test Login Page</a>
+    <a href="http://localhost:3000/register" class="test-link" target="_blank">📝 Test Register Page</a>
+
+    <h3>📊 Test Backend:</h3>
+    <a href="http://localhost:5000/api/products" class="test-link" target="_blank">📦 Test Products API</a>
+    <a href="http://localhost:5000/api/categories" class="test-link" target="_blank">🏷️ Test Categories API</a>
+
+    <script>
+        // Check localStorage status
+        function checkStatus() {
+            const token = localStorage.getItem('token');
+            const user = localStorage.getItem('user');
+            
+            document.getElementById('tokenStatus').textContent = token ? '✅ Ada' : '❌ Tidak ada';
+            
+            if (user) {
+                try {
+                    const userData = JSON.parse(user);
+                    document.getElementById('userRole').textContent = userData.role || 'Unknown';
+                } catch (e) {
+                    document.getElementById('userRole').textContent = 'Error parsing user data';
+                }
+            } else {
+                document.getElementById('userRole').textContent = '❌ Tidak ada user';
+            }
+        }
+
+        // Check status every 2 seconds
+        setInterval(checkStatus, 2000);
+        checkStatus();
+    </script>
+</body>
+</html>

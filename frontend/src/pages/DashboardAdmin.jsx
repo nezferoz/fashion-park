@@ -1,6 +1,30 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import { FaShoppingCart, FaUsers, FaExclamationTriangle, FaArrowRight } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
-import { FaShoppingCart, FaBoxOpen, FaUsers, FaExclamationTriangle, FaArrowRight } from 'react-icons/fa';
+import api from '../utils/api';
+import {
+  Chart as ChartJS,
+  ArcElement,
+  Tooltip,
+  Legend,
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Title,
+} from 'chart.js';
+import { Pie, Line } from 'react-chartjs-2';
+
+ChartJS.register(
+  ArcElement,
+  Tooltip,
+  Legend,
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Title
+);
 
 const StatCard = ({ icon, title, value, linkTo }) => (
   <Link to={linkTo} className="bg-white p-6 rounded-2xl shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300 block">
@@ -15,18 +39,134 @@ const StatCard = ({ icon, title, value, linkTo }) => (
 );
 
 const DashboardAdmin = () => {
-  // Dummy data
-  const recentOrders = [
-    { id: 'ORD-128', customer: 'Rina S.', total: 'Rp 450.000', status: 'Baru' },
-    { id: 'ORD-127', customer: 'Andi P.', total: 'Rp 1.200.000', status: 'Dikemas' },
-    { id: 'ORD-126', customer: 'Sari W.', total: 'Rp 300.000', status: 'Dikirim' },
-  ];
+  const [dashboardData, setDashboardData] = useState({
+    newOrders: 0,
+    totalUsers: 0,
+    lowStockProducts: 0,
+    recentOrders: [],
+    lowStockItems: []
+  });
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
 
-  const lowStockProducts = [
-    { name: 'Kemeja Lengan Panjang', stock: 5 },
-    { name: 'Celana Chino Hitam', stock: 3 },
-    { name: 'Topi Baseball', stock: 8 },
-  ];
+  useEffect(() => {
+    fetchDashboardData();
+  }, []);
+
+  // Chart data
+  const pieChartData = {
+    labels: ['Pesanan Baru', 'Total User', 'Stok Hampir Habis'],
+    datasets: [
+      {
+        data: [dashboardData.newOrders, dashboardData.totalUsers, dashboardData.lowStockProducts],
+        backgroundColor: [
+          'rgba(59, 130, 246, 0.8)', // Blue
+          'rgba(16, 185, 129, 0.8)',  // Green
+          'rgba(239, 68, 68, 0.8)',   // Red
+        ],
+        borderColor: [
+          'rgba(59, 130, 246, 1)',
+          'rgba(16, 185, 129, 1)',
+          'rgba(239, 68, 68, 1)',
+        ],
+        borderWidth: 2,
+      },
+    ],
+  };
+
+  const pieChartOptions = {
+    responsive: true,
+    plugins: {
+      legend: {
+        position: 'bottom',
+      },
+      title: {
+        display: true,
+        text: 'Statistik Dashboard',
+        font: {
+          size: 16,
+          weight: 'bold'
+        }
+      },
+    },
+  };
+
+  const fetchDashboardData = async () => {
+    try {
+      setLoading(true);
+      console.log('Fetching dashboard data...');
+      
+      // Fetch dashboard statistics
+      const [ordersRes, usersRes, productsRes] = await Promise.all([
+        api.get('/transactions/dashboard-stats'),
+        api.get('/users/count'),
+        api.get('/products/low-stock')
+      ]);
+
+      console.log('Orders response:', ordersRes.data);
+      console.log('Users response:', usersRes.data);
+      console.log('Products response:', productsRes.data);
+
+      const dashboardDataNew = {
+        newOrders: ordersRes.data.newOrders || 0,
+        totalUsers: usersRes.data.count || 0,
+        lowStockProducts: productsRes.data.count || 0,
+        recentOrders: ordersRes.data.recentOrders || [],
+        lowStockItems: productsRes.data.products || []
+      };
+
+      console.log('Processed dashboard data:', dashboardDataNew);
+      setDashboardData(dashboardDataNew);
+    } catch (err) {
+      console.error('Error fetching dashboard data:', err);
+      setError('Gagal memuat data dashboard');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const formatRupiah = (amount) => {
+    return `Rp ${Number(amount).toLocaleString('id-ID')}`;
+  };
+
+  const getStatusColor = (status) => {
+    switch (status?.toLowerCase()) {
+      case 'baru':
+      case 'new':
+        return 'bg-green-100 text-green-800';
+      case 'dikemas':
+      case 'packaged':
+        return 'bg-yellow-100 text-yellow-800';
+      case 'dikirim':
+      case 'shipped':
+        return 'bg-blue-100 text-blue-800';
+      case 'selesai':
+      case 'completed':
+        return 'bg-green-100 text-green-800';
+      default:
+        return 'bg-gray-100 text-gray-800';
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="flex-1 p-8 bg-gray-50">
+        <div className="flex items-center justify-center h-64">
+          <div className="text-xl text-gray-600">Memuat data dashboard...</div>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="flex-1 p-8 bg-gray-50">
+        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
+          {error}
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="flex-1 p-8 bg-gray-50">
@@ -37,21 +177,31 @@ const DashboardAdmin = () => {
         <StatCard 
           icon={<FaShoppingCart className="text-blue-600 text-2xl" />}
           title="Pesanan Baru"
-          value="15"
+          value={dashboardData.newOrders}
           linkTo="/admin/pesanan"
         />
         <StatCard 
           icon={<FaUsers className="text-blue-600 text-2xl" />}
           title="Total User"
-          value="45"
+          value={dashboardData.totalUsers}
           linkTo="/admin/user"
         />
         <StatCard 
           icon={<FaExclamationTriangle className="text-red-500 text-2xl" />}
           title="Stok Hampir Habis"
-          value="12 Produk"
-          linkTo="/admin/stok"
+          value={`${dashboardData.lowStockProducts} Produk`}
+          linkTo="/kasir/stok"
         />
+      </div>
+
+      {/* Grafik Lingkaran */}
+      <div className="bg-white p-6 rounded-2xl shadow-lg mb-8">
+        <h2 className="text-xl font-bold text-gray-800 mb-4">Statistik Dashboard</h2>
+        <div className="flex justify-center">
+          <div style={{ width: '400px', height: '400px' }}>
+            <Pie data={pieChartData} options={pieChartOptions} />
+          </div>
+        </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -70,21 +220,29 @@ const DashboardAdmin = () => {
                 </tr>
               </thead>
               <tbody>
-                {recentOrders.map(order => (
-                  <tr key={order.id} className="border-b">
-                    <td className="py-3 font-medium">{order.id}</td>
-                    <td className="py-3">{order.customer}</td>
-                    <td className="py-3">{order.total}</td>
-                    <td className="py-3">
-                      <span className={`px-2 py-1 text-sm font-semibold rounded-full ${order.status === 'Baru' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'}`}>
-                        {order.status}
-                      </span>
-                    </td>
-                    <td className="py-3">
-                      <Link to="/admin/pesanan" className="text-blue-600 hover:underline">Detail</Link>
+                {dashboardData.recentOrders.length > 0 ? (
+                  dashboardData.recentOrders.map(order => (
+                    <tr key={order.transaction_id} className="border-b">
+                      <td className="py-3 font-medium">{order.transaction_code}</td>
+                      <td className="py-3">{order.customer_name || 'Cash'}</td>
+                      <td className="py-3">{formatRupiah(order.final_amount)}</td>
+                      <td className="py-3">
+                        <span className={`px-2 py-1 text-sm font-semibold rounded-full ${getStatusColor(order.payment_status)}`}>
+                          {order.payment_status}
+                        </span>
+                      </td>
+                      <td className="py-3">
+                        <Link to={`/admin/pesanan/${order.transaction_id}`} className="text-blue-600 hover:underline">Detail</Link>
+                      </td>
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td colSpan="5" className="py-4 text-center text-gray-500">
+                      Belum ada pesanan
                     </td>
                   </tr>
-                ))}
+                )}
               </tbody>
             </table>
           </div>
@@ -94,14 +252,20 @@ const DashboardAdmin = () => {
         <div className="bg-white p-6 rounded-2xl shadow-lg">
           <h2 className="text-xl font-bold text-gray-800 mb-4">Produk Stok Rendah</h2>
           <ul className="space-y-3">
-            {lowStockProducts.map(product => (
-              <li key={product.name} className="flex justify-between items-center">
-                <span>{product.name}</span>
-                <span className="font-bold text-red-600">{product.stock} pcs</span>
+            {dashboardData.lowStockItems.length > 0 ? (
+              dashboardData.lowStockItems.map(product => (
+                <li key={product.product_id} className="flex justify-between items-center">
+                  <span className="text-sm">{product.product_name}</span>
+                  <span className="font-bold text-red-600 text-sm">{product.total_stock} pcs</span>
+                </li>
+              ))
+            ) : (
+              <li className="text-center text-gray-500 text-sm">
+                Tidak ada produk dengan stok rendah
               </li>
-            ))}
+            )}
           </ul>
-          <Link to="/admin/stok" className="mt-4 bg-blue-600 text-white px-4 py-2 rounded-lg font-semibold hover:bg-blue-700 transition-all w-full block text-center">
+          <Link to="/kasir/stok" className="mt-4 bg-blue-600 text-white px-4 py-2 rounded-lg font-semibold hover:bg-blue-700 transition-all w-full block text-center">
             Lihat Semua <FaArrowRight className="inline ml-2" />
           </Link>
         </div>

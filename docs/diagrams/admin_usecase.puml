@@ -1,0 +1,119 @@
+@startuml
+left to right direction
+skinparam actorStyle awesome
+skinparam usecase {
+  BackgroundColor LightCyan
+  BorderColor DarkCyan
+  FontColor Black
+}
+skinparam rectangle {
+  BackgroundColor LightYellow
+  BorderColor DarkOrange
+}
+skinparam actor {
+  BackgroundColor LightGreen
+  BorderColor DarkGreen
+}
+skinparam package {
+  BackgroundColor LightGray
+  BorderColor DarkGray
+}
+
+actor Admin
+
+rectangle "Sistem Fashion Park" {
+  
+  package "Dashboard Statistik" {
+    usecase "Dashboard Statistik" as Stats
+    usecase "Statistik User" as Stats_User
+    usecase "Statistik Produk" as Stats_Product
+    usecase "Statistik Transaksi" as Stats_Trx
+    usecase "Statistik Pesanan" as Stats_Order
+  }
+
+  package "Kelola Pesanan" {
+    usecase "Kelola Pesanan" as OM
+    usecase "Lihat Daftar Pesanan" as OM_List
+    usecase "Update Status Pesanan" as OM_Status
+    usecase "Lihat Detail Pesanan" as OM_Detail
+    usecase "Cancel Pesanan" as OM_Cancel
+    usecase "Refund Pesanan" as OM_Refund
+    usecase "Tracking Pesanan" as OM_Tracking
+    usecase "Filter Pesanan" as OM_Filter
+  }
+
+  package "Kelola User" {
+    usecase "Kelola User" as UM
+    usecase "Lihat Daftar User" as UM_List
+    usecase "Tambah User Baru" as UM_Add
+    usecase "Edit Data User" as UM_Edit
+    usecase "Update Status User" as UM_Status
+    usecase "Reset Password User" as UM_Reset
+    usecase "Hapus User" as UM_Delete
+    usecase "Filter User" as UM_Filter
+  }
+
+  package "Kelola Kategori Produk" {
+    usecase "Kelola Kategori Produk" as Cat
+    usecase "Lihat Daftar Kategori" as Cat_List
+    usecase "Tambah Kategori Baru" as Cat_Add
+    usecase "Edit Kategori" as Cat_Edit
+    usecase "Hapus Kategori" as Cat_Delete
+    usecase "Status Kategori" as Cat_Status
+  }
+
+  package "Riwayat Transaksi (Admin)" {
+    usecase "Riwayat Transaksi (Admin)" as A_History
+    usecase "Lihat Semua Transaksi" as A_H_All
+    usecase "Filter Transaksi" as A_H_Filter
+    usecase "Detail Transaksi" as A_H_Detail
+    usecase "Export Data" as A_H_Export
+  }
+
+  ' Stats Relationships
+  Stats .> Stats_User : <<include>>
+  Stats .> Stats_Product : <<include>>
+  Stats .> Stats_Trx : <<include>>
+  Stats .> Stats_Order : <<include>>
+
+  ' Order Management Relationships
+  OM .> OM_List : <<include>>
+  OM .> OM_Status : <<include>>
+  OM .> OM_Detail : <<include>>
+  OM .> OM_Cancel : <<include>>
+  OM .> OM_Refund : <<include>>
+  OM .> OM_Tracking : <<include>>
+  OM .> OM_Filter : <<include>>
+
+  ' User Management Relationships
+  UM .> UM_List : <<include>>
+  UM .> UM_Add : <<include>>
+  UM .> UM_Edit : <<include>>
+  UM .> UM_Status : <<include>>
+  UM .> UM_Reset : <<include>>
+  UM .> UM_Delete : <<include>>
+  UM .> UM_Filter : <<include>>
+
+  ' Category Management Relationships
+  Cat .> Cat_List : <<include>>
+  Cat .> Cat_Add : <<include>>
+  Cat .> Cat_Edit : <<include>>
+  Cat .> Cat_Delete : <<include>>
+  Cat .> Cat_Status : <<include>>
+
+  ' Admin History Relationships
+  A_History .> A_H_All : <<include>>
+  A_History .> A_H_Filter : <<include>>
+  A_History .> A_H_Detail : <<include>>
+  A_History .> A_H_Export : <<include>>
+}
+
+' Main Actor Connections
+Admin --> Stats
+Admin --> OM
+Admin --> UM
+Admin --> Cat
+Admin --> A_History
+
+title "Use Case Diagram - Admin\nSistem Fashion Park"
+@enduml

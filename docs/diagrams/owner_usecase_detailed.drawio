@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mxfile host="app.diagrams.net" modified="2024-01-01T00:00:00.000Z" agent="5.0" etag="xxx" version="22.1.16" type="device">
+  <diagram name="Owner Use Case" id="owner-usecase">
+    <mxGraphModel dx="1422" dy="794" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1169" pageHeight="827" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        
+        <!-- Title -->
+        <mxCell id="title" value="USE CASE DIAGRAM - PEMILIK (OWNER)&#xa;SISTEM FASHION PARK" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=16;fontStyle=1;fontColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="400" y="20" width="350" height="40" as="geometry" />
+        </mxCell>
+        
+        <!-- Actor -->
+        <mxCell id="actor" value="PEMILIK&#xa;(OWNER)" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=1;outlineConnect=0;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+          <mxGeometry x="50" y="100" width="30" height="60" as="geometry" />
+        </mxCell>
+        
+        <!-- System Boundary -->
+        <mxCell id="system" value="SISTEM FASHION PARK" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=14;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="150" y="80" width="950" height="700" as="geometry" />
+        </mxCell>
+        
+        <!-- Dashboard KPI & Analytics Package -->
+        <mxCell id="kpi_package" value="Dashboard KPI & Analytics" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=12;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="180" y="120" width="200" height="200" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="kpi_main" value="Dashboard KPI & Analytics" style="ellipse;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="200" y="150" width="160" height="40" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="kpi_total" value="Lihat Total Pendapatan&#xa;• Harian&#xa;• Mingguan&#xa;• Bulanan&#xa;• Tahunan" style="ellipse;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=9;" vertex="1" parent="1">
+          <mxGeometry x="190" y="210" width="120" height="60" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="kpi_trend" value="Analisis Trend Penjualan&#xa;• Grafik trend waktu&#xa;• Perbandingan periode" style="ellipse;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=9;" vertex="1" parent="1">
+          <mxGeometry x="250" y="210" width="120" height="60" as="geometry" />
+        </mxCell>
+        
+        <!-- Laporan Penjualan Package -->
+        <mxCell id="report_package" value="Laporan Penjualan" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=12;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="420" y="120" width="200" height="200" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="report_main" value="Laporan Penjualan" style="ellipse;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="440" y="150" width="160" height="40" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="report_daily" value="Laporan Harian&#xa;• Detail produk&#xa;• Per hari" style="ellipse;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=9;" vertex="1" parent="1">
+          <mxGeometry x="430" y="210" width="120" height="60" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="report_weekly" value="Laporan Mingguan&#xa;• Analisis trend&#xa;• Per minggu" style="ellipse;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=9;" vertex="1" parent="1">
+          <mxGeometry x="490" y="210" width="120" height="60" as="geometry" />
+        </mxCell>
+        
+        <!-- Riwayat Transaksi Package -->
+        <mxCell id="history_package" value="Riwayat Transaksi" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=12;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="660" y="120" width="200" height="200" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="history_main" value="Riwayat Transaksi" style="ellipse;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="680" y="150" width="160" height="40" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="history_all" value="Lihat Semua Transaksi&#xa;• Semua transaksi&#xa;• Yang pernah dilakukan" style="ellipse;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=9;" vertex="1" parent="1">
+          <mxGeometry x="670" y="210" width="120" height="60" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="history_filter" value="Filter Transaksi&#xa;• Tanggal&#xa;• Status&#xa;• Metode pembayaran" style="ellipse;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=9;" vertex="1" parent="1">
+          <mxGeometry x="730" y="210" width="120" height="60" as="geometry" />
+        </mxCell>
+        
+        <!-- Analisis Performa Toko Package -->
+        <mxCell id="perf_package" value="Analisis Performa Toko" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=12;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="900" y="120" width="200" height="200" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="perf_main" value="Analisis Performa Toko" style="ellipse;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="920" y="150" width="160" height="40" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="perf_cashier" value="Analisis Kasir&#xa;• Performa penjualan&#xa;• Setiap kasir" style="ellipse;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=9;" vertex="1" parent="1">
+          <mxGeometry x="910" y="210" width="120" height="60" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="perf_product" value="Analisis Produk&#xa;• Menguntungkan&#xa;• Merugikan" style="ellipse;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=9;" vertex="1" parent="1">
+          <mxGeometry x="970" y="210" width="120" height="60" as="geometry" />
+        </mxCell>
+        
+        <!-- Connections -->
+        <!-- Actor to main use cases -->
+        <mxCell id="conn1" value="" style="endArrow=classic;html=1;rounded=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="actor" target="kpi_main">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="400" y="400" as="sourcePoint" />
+            <mxPoint x="450" y="350" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        
+        <mxCell id="conn2" value="" style="endArrow=classic;html=1;rounded=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="actor" target="report_main">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="400" y="400" as="sourcePoint" />
+            <mxPoint x="450" y="350" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        
+        <mxCell id="conn3" value="" style="endArrow=classic;html=1;rounded=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="actor" target="history_main">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="400" y="400" as="sourcePoint" />
+            <mxPoint x="450" y="350" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        
+        <mxCell id="conn4" value="" style="endArrow=classic;html=1;rounded=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="actor" target="perf_main">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="400" y="400" as="sourcePoint" />
+            <mxPoint x="450" y="350" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        
+        <!-- Legend -->
+        <mxCell id="legend" value="LEGENDA:&#xa;• Package: Kelompok fitur&#xa;• Use Case: Fitur utama&#xa;• Sub-Use Case: Detail aktivitas&#xa;• Include: Relasi wajib" style="text;html=1;strokeColor=#666666;fillColor=#f5f5f5;align=left;verticalAlign=top;whiteSpace=wrap;rounded=1;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="180" y="650" width="200" height="100" as="geometry" />
+        </mxCell>
+        
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

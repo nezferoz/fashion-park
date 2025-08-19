@@ -1,0 +1,90 @@
+@startuml
+left to right direction
+skinparam actorStyle awesome
+skinparam usecase {
+  BackgroundColor LightBlue
+  BorderColor DarkBlue
+  FontColor Black
+}
+skinparam rectangle {
+  BackgroundColor LightYellow
+  BorderColor DarkOrange
+}
+skinparam actor {
+  BackgroundColor LightGreen
+  BorderColor DarkGreen
+}
+
+actor "Pemilik" as Owner
+
+rectangle "Sistem Fashion Park" {
+  
+  package "Dashboard KPI & Analytics" {
+    usecase "Dashboard KPI & Analytics" as KPI
+    usecase "Lihat Total Pendapatan" as KPI_Total
+    usecase "Analisis Trend Penjualan" as KPI_Trend
+    usecase "Perbandingan Periode" as KPI_Compare
+    usecase "Lihat Produk Terlaris" as KPI_TopProducts
+    usecase "Analisis Kategori Terpopuler" as KPI_TopCategories
+  }
+
+  package "Laporan Penjualan" {
+    usecase "Laporan Penjualan" as Report
+    usecase "Laporan Harian" as Report_Daily
+    usecase "Laporan Mingguan" as Report_Weekly
+    usecase "Laporan Bulanan" as Report_Monthly
+    usecase "Laporan Tahunan" as Report_Yearly
+    usecase "Export Laporan - PDF/Excel" as Report_Export
+  }
+
+  package "Riwayat Transaksi" {
+    usecase "Riwayat Transaksi" as History
+    usecase "Lihat Semua Transaksi" as H_All
+    usecase "Filter Transaksi" as H_Filter
+    usecase "Detail Transaksi" as H_Detail
+    usecase "Pencarian Transaksi" as H_Search
+  }
+
+  package "Analisis Performa Toko" {
+    usecase "Analisis Performa Toko" as Perf
+    usecase "Analisis Kasir" as Perf_Cashier
+    usecase "Analisis Produk" as Perf_Product
+    usecase "Analisis Pelanggan" as Perf_Customer
+    usecase "Analisis Waktu" as Perf_Time
+  }
+
+  ' KPI Relationships
+  KPI .> KPI_Total : <<include>>
+  KPI .> KPI_Trend : <<include>>
+  KPI .> KPI_Compare : <<include>>
+  KPI .> KPI_TopProducts : <<include>>
+  KPI .> KPI_TopCategories : <<include>>
+
+  ' Report Relationships
+  Report .> Report_Daily : <<include>>
+  Report .> Report_Weekly : <<include>>
+  Report .> Report_Monthly : <<include>>
+  Report .> Report_Yearly : <<include>>
+  Report .> Report_Export : <<include>>
+
+  ' History Relationships
+  History .> H_All : <<include>>
+  History .> H_Filter : <<include>>
+  History .> H_Detail : <<include>>
+  History .> H_Search : <<include>>
+
+  ' Performance Relationships
+  Perf .> Perf_Cashier : <<include>>
+  Perf .> Perf_Product : <<include>>
+  Perf .> Perf_Customer : <<include>>
+  Perf .> Perf_Time : <<include>>
+}
+
+' Main Actor Connections
+Owner --> KPI
+Owner --> Report
+Owner --> History
+Owner --> Perf
+
+title "Use Case Diagram - Pemilik (Owner)\nSistem Fashion Park"
+@enduml

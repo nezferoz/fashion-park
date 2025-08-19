@@ -1,0 +1,126 @@
+@startuml
+left to right direction
+skinparam actorStyle awesome
+skinparam usecase {
+  BackgroundColor LightPink
+  BorderColor DarkPink
+  FontColor Black
+}
+skinparam rectangle {
+  BackgroundColor LightYellow
+  BorderColor DarkOrange
+}
+skinparam actor {
+  BackgroundColor LightGreen
+  BorderColor DarkGreen
+}
+skinparam package {
+  BackgroundColor LightGray
+  BorderColor DarkGray
+}
+
+actor Kasir
+
+rectangle "Sistem Fashion Park" {
+  
+  package "Pencarian Barang" {
+    usecase "Pencarian Barang" as Search
+    usecase "Pencarian Nama" as Search_Name
+    usecase "Pencarian Barcode" as Search_Barcode
+    usecase "Pencarian Kategori" as Search_Category
+    usecase "Filter Harga" as Search_Price
+    usecase "Lihat Stok" as Search_Stock
+  }
+
+  package "Proses Transaksi" {
+    usecase "Proses Transaksi" as POS
+    usecase "Tambah ke Keranjang" as POS_Add
+    usecase "Update Jumlah" as POS_UpdateQty
+    usecase "Hapus Produk" as POS_Remove
+    usecase "Lihat Keranjang" as POS_ViewCart
+    usecase "Kosongkan Keranjang" as POS_Clear
+  }
+
+  package "Scan Barcode" {
+    usecase "Scan Barcode" as Scan
+    usecase "Scan Manual" as Scan_Manual
+    usecase "Input Manual" as Scan_Input
+    usecase "Validasi Barcode" as Scan_Validate
+    usecase "Error Handling" as Scan_Error
+  }
+
+  package "Lihat Stok Produk" {
+    usecase "Lihat Stok Produk" as Stock
+    usecase "Stok Real-time" as Stock_RT
+    usecase "Stok Menipis" as Stock_Low
+    usecase "Stok Habis" as Stock_Out
+    usecase "Update Stok" as Stock_Update
+  }
+
+  package "Hitung Total & Kembalian" {
+    usecase "Hitung Total & Kembalian" as Cash
+    usecase "Subtotal" as Cash_Subtotal
+    usecase "Diskon" as Cash_Discount
+    usecase "PPN" as Cash_Tax
+    usecase "Total Akhir" as Cash_Total
+    usecase "Kembalian" as Cash_Change
+  }
+
+  package "Print Struk" {
+    usecase "Print Struk" as Receipt
+    usecase "Preview Struk" as Receipt_Preview
+    usecase "Print Struk Action" as Receipt_Print
+    usecase "Format Struk" as Receipt_Format
+    usecase "Re-print" as Receipt_Reprint
+  }
+
+  ' Search Relationships
+  Search .> Search_Name : <<include>>
+  Search .> Search_Barcode : <<include>>
+  Search .> Search_Category : <<include>>
+  Search .> Search_Price : <<include>>
+  Search .> Search_Stock : <<include>>
+
+  ' POS Relationships
+  POS .> POS_Add : <<include>>
+  POS .> POS_UpdateQty : <<include>>
+  POS .> POS_Remove : <<include>>
+  POS .> POS_ViewCart : <<include>>
+  POS .> POS_Clear : <<include>>
+
+  ' Scan Relationships
+  Scan .> Scan_Manual : <<include>>
+  Scan .> Scan_Input : <<include>>
+  Scan .> Scan_Validate : <<include>>
+  Scan .> Scan_Error : <<include>>
+
+  ' Stock Relationships
+  Stock .> Stock_RT : <<include>>
+  Stock .> Stock_Low : <<include>>
+  Stock .> Stock_Out : <<include>>
+  Stock .> Stock_Update : <<include>>
+
+  ' Cash Relationships
+  Cash .> Cash_Subtotal : <<include>>
+  Cash .> Cash_Discount : <<include>>
+  Cash .> Cash_Tax : <<include>>
+  Cash .> Cash_Total : <<include>>
+  Cash .> Cash_Change : <<include>>
+
+  ' Receipt Relationships
+  Receipt .> Receipt_Preview : <<include>>
+  Receipt .> Receipt_Print : <<include>>
+  Receipt .> Receipt_Format : <<include>>
+  Receipt .> Receipt_Reprint : <<include>>
+}
+
+' Main Actor Connections
+Kasir --> Search
+Kasir --> POS
+Kasir --> Scan
+Kasir --> Stock
+Kasir --> Cash
+Kasir --> Receipt
+
+title "Use Case Diagram - Kasir\nSistem Fashion Park"
+@enduml

@@ -11,6 +11,8 @@ CREATE TABLE IF NOT EXISTS users (
     city_name VARCHAR(100),
     district_id INT,
     district_name VARCHAR(100),
+    village_id INT,
+    village_name VARCHAR(100),
     postal_code VARCHAR(20),
     address_detail TEXT,
     latitude DECIMAL(10,8),

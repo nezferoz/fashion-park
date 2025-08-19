@@ -1,6 +1,28 @@
 import React, { useState, useEffect } from 'react';
-import { FaDollarSign, FaChartLine, FaUsers, FaShoppingCart } from 'react-icons/fa';
+import { FaDollarSign, FaUsers, FaShoppingCart, FaChartBar } from 'react-icons/fa';
+import { Line } from 'react-chartjs-2';
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Title,
+  Tooltip,
+  Legend
+} from 'chart.js';
 import api from '../../utils/api';
+
+// Register Chart.js components
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Title,
+  Tooltip,
+  Legend
+);
 
 const StatCard = ({ icon, title, value, change, changeType, loading }) => {
   const isPositive = changeType === 'positive';
@@ -36,7 +58,6 @@ const DashboardKPI = () => {
   const [error, setError] = useState(null);
   const [kpiData, setKpiData] = useState({
     totalRevenue: 0,
-    netProfit: 0,
     newCustomers: 0,
     averageTransactionValue: 0,
     totalTransactions: 0,
@@ -47,58 +68,78 @@ const DashboardKPI = () => {
     retentionRate: 0,
     topProduct: 'N/A'
   });
+  const [chartData, setChartData] = useState(null);
 
   useEffect(() => {
     const fetchKPIData = async () => {
       try {
         setLoading(true);
         
-        // Fetch all necessary data
-        const [transactionsRes, productsRes, usersRes] = await Promise.all([
-          api.get('/transactions'),
-          api.get('/products'),
-          api.get('/users')
-        ]);
-
-        const transactions = transactionsRes.data;
-        const products = productsRes.data;
-        const users = usersRes.data;
-
-        // Calculate KPIs with type safety
-        const totalRevenue = transactions.reduce((sum, t) => sum + Number(t.final_amount || 0), 0);
-        const netProfit = !isNaN(totalRevenue) ? totalRevenue * 0.4 : 0; // Assuming 40% profit margin
-        const newCustomers = users.filter(u => u.role === 'customer').length;
-        const averageTransactionValue = transactions.length > 0 ? totalRevenue / transactions.length : 0;
+        // Fetch KPI data from the new endpoint
+        const kpiRes = await api.get('/transactions/kpi');
+        const kpiData = kpiRes.data;
         
-        // Calculate conversion rate (transactions / total users)
-        const conversionRate = users.length > 0 ? (transactions.length / users.length) * 100 : 0;
-        
-        // Estimate customer acquisition cost (marketing budget / new customers)
-        const customerAcquisitionCost = newCustomers > 0 ? 5000000 / newCustomers : 0;
-        
-        // Estimate retention rate (repeat customers / total customers)
-        const retentionRate = 45; // This would need more complex calculation
-        
-        // Find top product (this would need transaction details in a real system)
-        const topProduct = products.length > 0 ? products[0].product_name : 'N/A';
+        console.log('📊 KPI Data received:', kpiData);
 
         setKpiData({
-          totalRevenue: isNaN(totalRevenue) ? 0 : totalRevenue,
-          netProfit: isNaN(netProfit) ? 0 : netProfit,
-          newCustomers,
-          averageTransactionValue: isNaN(averageTransactionValue) ? 0 : averageTransactionValue,
-          totalTransactions: transactions.length,
-          totalProducts: products.length,
-          totalUsers: users.length,
-          conversionRate: isNaN(conversionRate) ? 0 : conversionRate,
-          customerAcquisitionCost: isNaN(customerAcquisitionCost) ? 0 : customerAcquisitionCost,
-          retentionRate,
-          topProduct
+          totalRevenue: kpiData.totalRevenue || 0,
+          currentMonthRevenue: kpiData.currentMonthRevenue || 0,
+          lastMonthRevenue: kpiData.lastMonthRevenue || 0,
+          revenueChange: kpiData.revenueChange || 0,
+          newCustomers: kpiData.newCustomers || 0,
+          averageTransactionValue: kpiData.averageTransactionValue || 0,
+          averageTransactionChange: kpiData.averageTransactionChange || 0,
+          totalTransactions: kpiData.totalTransactions || 0,
+          currentMonthTransactionsCount: kpiData.currentMonthTransactionsCount || 0,
+          lastMonthTransactionsCount: kpiData.lastMonthTransactionsCount || 0,
+          transactionChange: kpiData.transactionChange || 0,
+          totalProducts: kpiData.totalProducts || 0,
+          totalUsers: kpiData.totalUsers || 0,
+          conversionRate: kpiData.conversionRate || 0,
+          customerAcquisitionCost: kpiData.customerAcquisitionCost || 0,
+          retentionRate: kpiData.retentionRate || 0,
+          topProduct: kpiData.topProduct || 'N/A'
         });
+
+        setChartData({
+          labels: kpiData.chartLabels || [],
+          datasets: [
+            {
+              label: 'Pendapatan Harian',
+              data: kpiData.chartRevenueData || [],
+              borderColor: 'rgb(59, 130, 246)',
+              backgroundColor: 'rgba(59, 130, 246, 0.1)',
+              tension: 0.4,
+              fill: true
+            }
+          ]
+        });
+
         setError(null);
       } catch (err) {
         console.error('Error fetching KPI data:', err);
         setError('Gagal memuat data KPI');
+        
+        // Set default values if API fails
+        setKpiData({
+          totalRevenue: 0,
+          currentMonthRevenue: 0,
+          lastMonthRevenue: 0,
+          revenueChange: 0,
+          newCustomers: 0,
+          averageTransactionValue: 0,
+          averageTransactionChange: 0,
+          totalTransactions: 0,
+          currentMonthTransactionsCount: 0,
+          lastMonthTransactionsCount: 0,
+          transactionChange: 0,
+          totalProducts: 0,
+          totalUsers: 0,
+          conversionRate: 0,
+          customerAcquisitionCost: 0,
+          retentionRate: 0,
+          topProduct: 'N/A'
+        });
       } finally {
         setLoading(false);
       }
@@ -137,7 +178,7 @@ const DashboardKPI = () => {
 
   return (
     <div className="flex-1 p-8 bg-gray-50">
-      <h1 className="text-4xl font-bold text-gray-800 mb-8">Dashboard KPI (Pemilik)</h1>
+              <h1 className="text-4xl font-bold text-gray-800 mb-8">Dashboard</h1>
       
       {error && (
         <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-6">
@@ -145,37 +186,21 @@ const DashboardKPI = () => {
         </div>
       )}
       
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
         <StatCard 
           icon={<FaDollarSign className="text-blue-600 text-2xl" />}
           title="Total Pendapatan"
           value={formatCurrency(kpiData.totalRevenue)}
-          change="+12.5%"
-          changeType="positive"
-          loading={loading}
-        />
-        <StatCard 
-          icon={<FaChartLine className="text-blue-600 text-2xl" />}
-          title="Laba Bersih"
-          value={formatCurrency(kpiData.netProfit)}
-          change="+8.2%"
-          changeType="positive"
-          loading={loading}
-        />
-        <StatCard 
-          icon={<FaUsers className="text-blue-600 text-2xl" />}
-          title="Pelanggan Baru"
-          value={formatNumber(kpiData.newCustomers)}
-          change="-2.1%"
-          changeType="negative"
+          change={`${(kpiData.revenueChange || 0) >= 0 ? '+' : ''}${(kpiData.revenueChange || 0).toFixed(1)}%`}
+          changeType={(kpiData.revenueChange || 0) >= 0 ? 'positive' : 'negative'}
           loading={loading}
         />
         <StatCard 
           icon={<FaShoppingCart className="text-blue-600 text-2xl" />}
           title="Nilai Transaksi Rata-rata"
           value={formatCurrency(kpiData.averageTransactionValue)}
-          change="+5.7%"
-          changeType="positive"
+          change={`${(kpiData.averageTransactionChange || 0) >= 0 ? '+' : ''}${(kpiData.averageTransactionChange || 0).toFixed(1)}%`}
+          changeType={(kpiData.averageTransactionChange || 0) >= 0 ? 'positive' : 'negative'}
           loading={loading}
         />
       </div>
@@ -184,9 +209,100 @@ const DashboardKPI = () => {
         {/* Kolom Kiri untuk Chart */}
         <div className="lg:col-span-2 bg-white p-6 rounded-2xl shadow-lg">
           <h2 className="text-xl font-bold text-gray-800 mb-4">Grafik Pertumbuhan Pendapatan</h2>
-          <div className="h-80 bg-gray-200 rounded-lg flex items-center justify-center">
-            <p className="text-gray-500">[Placeholder untuk Grafik]</p>
-          </div>
+          {chartData ? (
+            <Line
+              data={chartData}
+              options={{
+                responsive: true,
+                plugins: {
+                  legend: {
+                    position: 'top',
+                    labels: {
+                      color: '#374151'
+                    }
+                  },
+                  tooltip: {
+                    callbacks: {
+                      label: function(context) {
+                        let label = context.dataset.label || '';
+                        if (label) {
+                          label += ': ';
+                        }
+                        if (context.parsed.y !== null) {
+                          label += formatCurrency(context.parsed.y);
+                        }
+                        return label;
+                      }
+                    }
+                  },
+                  title: {
+                    display: true,
+                    text: 'Pendapatan Harian (Rp)',
+                    color: '#374151',
+                    font: {
+                      size: 18
+                    },
+                    padding: {
+                      top: 10,
+                      bottom: 10
+                    }
+                  }
+                },
+                scales: {
+                  x: {
+                    ticks: {
+                      color: '#6b7280',
+                      font: {
+                        size: 12
+                      }
+                    },
+                    grid: {
+                      color: '#e5e7eb'
+                    },
+                    title: {
+                      display: true,
+                      text: 'Tanggal',
+                      color: '#6b7280',
+                      font: {
+                        size: 14
+                      },
+                      padding: {
+                        top: 10,
+                        bottom: 10
+                      }
+                    }
+                  },
+                  y: {
+                    ticks: {
+                      color: '#6b7280',
+                      font: {
+                        size: 12
+                      }
+                    },
+                    grid: {
+                      color: '#e5e7eb'
+                    },
+                    title: {
+                      display: true,
+                      text: 'Pendapatan (Rp)',
+                      color: '#6b7280',
+                      font: {
+                        size: 14
+                      },
+                      padding: {
+                        top: 10,
+                        bottom: 10
+                      }
+                    }
+                  }
+                }
+              }}
+            />
+          ) : (
+            <div className="h-80 bg-gray-200 rounded-lg flex items-center justify-center">
+              <p className="text-gray-500">[Placeholder untuk Grafik]</p>
+            </div>
+          )}
         </div>
 
         {/* Kolom Kanan untuk KPI lainnya */}
@@ -194,24 +310,24 @@ const DashboardKPI = () => {
           <h2 className="text-xl font-bold text-gray-800 mb-4">Ringkasan Kinerja</h2>
           <ul className="space-y-4">
             <li className="flex justify-between items-center">
-              <span className="font-semibold text-gray-600">Tingkat Konversi</span>
-              <span className="font-bold text-lg text-gray-800">{isNaN(kpiData.conversionRate) ? 0 : kpiData.conversionRate.toFixed(1)}%</span>
-            </li>
-            <li className="flex justify-between items-center">
-              <span className="font-semibold text-gray-600">Biaya Akuisisi Pelanggan</span>
-              <span className="font-bold text-lg text-gray-800">{formatCurrency(kpiData.customerAcquisitionCost)}</span>
-            </li>
-            <li className="flex justify-between items-center">
-              <span className="font-semibold text-gray-600">Tingkat Retensi</span>
-              <span className="font-bold text-lg text-gray-800">{kpiData.retentionRate}%</span>
-            </li>
-            <li className="flex justify-between items-center">
               <span className="font-semibold text-gray-600">Produk Terlaris</span>
-              <span className="font-bold text-lg text-gray-800">{kpiData.topProduct}</span>
+              <span className="font-bold text-lg text-gray-800">
+                {kpiData.topProduct}
+                {kpiData.topProductQuantity > 0 && (
+                  <span className="text-sm text-gray-500 ml-2">
+                    ({kpiData.topProductQuantity} terjual)
+                  </span>
+                )}
+              </span>
             </li>
             <li className="flex justify-between items-center">
               <span className="font-semibold text-gray-600">Total Transaksi</span>
-              <span className="font-bold text-lg text-gray-800">{kpiData.totalTransactions}</span>
+              <span className="font-bold text-lg text-gray-800">
+                {kpiData.successTransactionsCount || 0} / {kpiData.totalTransactions}
+                <span className="text-sm text-gray-500 ml-2">
+                  (Success / Total)
+                </span>
+              </span>
             </li>
             <li className="flex justify-between items-center">
               <span className="font-semibold text-gray-600">Total Produk</span>

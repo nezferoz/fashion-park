@@ -33,7 +33,7 @@ const DashboardKasir = () => {
                 Total Transaksi Hari Ini: {totalTransaksi}
               </div>
               <div className="bg-green-100 text-green-800 rounded-lg px-6 py-4 font-bold text-xl shadow">
-                Total Penjualan Hari Ini: Rp{totalPenjualan.toLocaleString()}
+                Total Penjualan Hari Ini: Rp{Number(totalPenjualan).toLocaleString('id-ID')}
               </div>
             </div>
             <div className="mt-8 flex gap-4">

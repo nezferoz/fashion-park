@@ -1,0 +1,413 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mxfile host="app.diagrams.net" modified="2024-08-10T06:00:00.000Z" agent="5.0" etag="abc123" version="22.1.16" type="device">
+  <diagram name="System Flowchart" id="system-flowchart">
+    <mxGraphModel dx="1422" dy="794" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1400" pageHeight="1200" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        
+        <!-- Title -->
+        <mxCell id="title" value="SYSTEM FLOWCHART SISTEM FASHION PARK" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=24;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="400" y="20" width="600" height="40" as="geometry" />
+        </mxCell>
+        
+        <!-- Start -->
+        <mxCell id="start" value="START" style="ellipse;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=16;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="600" y="80" width="100" height="60" as="geometry" />
+        </mxCell>
+        
+        <!-- Login Process -->
+        <mxCell id="login" value="User Login" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=14;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="550" y="180" width="200" height="60" as="geometry" />
+        </mxCell>
+        
+        <!-- Authentication Check -->
+        <mxCell id="auth_check" value="Validasi Kredensial" style="rhombus;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=14;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="550" y="280" width="200" height="120" as="geometry" />
+        </mxCell>
+        
+        <!-- Invalid Credentials -->
+        <mxCell id="invalid" value="Kredensial Salah" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="800" y="310" width="150" height="60" as="geometry" />
+        </mxCell>
+        
+        <!-- Role Check -->
+        <mxCell id="role_check" value="Cek Role User" style="rhombus;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=14;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="550" y="440" width="200" height="120" as="geometry" />
+        </mxCell>
+        
+        <!-- Admin Dashboard -->
+        <mxCell id="admin_dash" value="Dashboard Admin&#xa;- Lihat Statistik&#xa;- Kelola Pesanan&#xa;- Kelola User&#xa;- Lihat Riwayat" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="100" y="460" width="150" height="80" as="geometry" />
+        </mxCell>
+        
+        <!-- Kasir Dashboard -->
+        <mxCell id="kasir_dash" value="Dashboard Kasir&#xa;- Pencarian Barang&#xa;- Proses Transaksi&#xa;- Scan Barcode&#xa;- Print Struk" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="300" y="460" width="150" height="80" as="geometry" />
+        </mxCell>
+        
+        <!-- Pemilik Dashboard -->
+        <mxCell id="pemilik_dash" value="Dashboard Pemilik&#xa;- Dashboard KPI&#xa;- Laporan Penjualan&#xa;- Riwayat Transaksi&#xa;- Analisis Performa" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="500" y="460" width="150" height="80" as="geometry" />
+        </mxCell>
+        
+        <!-- Pelanggan Dashboard -->
+        <mxCell id="pelanggan_dash" value="Dashboard Pelanggan&#xa;- Lihat Katalog&#xa;- Shopping Cart&#xa;- Checkout&#xa;- Tracking Pesanan" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="700" y="460" width="150" height="80" as="geometry" />
+        </mxCell>
+        
+        <!-- Transaction Process (Kasir) -->
+        <mxCell id="transaction_start" value="Mulai Transaksi" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="100" y="600" width="150" height="60" as="geometry" />
+        </mxCell>
+        
+        <!-- Search Product -->
+        <mxCell id="search_product" value="Pencarian Produk&#xa;(Barcode/Nama)" style="rhombus;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="100" y="700" width="150" height="80" as="geometry" />
+        </mxCell>
+        
+        <!-- Product Found -->
+        <mxCell id="product_found" value="Produk Ditemukan" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="300" y="720" width="150" height="60" as="geometry" />
+        </mxCell>
+        
+        <!-- Add to Cart -->
+        <mxCell id="add_cart" value="Tambah ke Keranjang" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="300" y="800" width="150" height="60" as="geometry" />
+        </mxCell>
+        
+        <!-- Payment Process -->
+        <mxCell id="payment" value="Proses Pembayaran" style="rhombus;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="300" y="900" width="150" height="80" as="geometry" />
+        </mxCell>
+        
+        <!-- Payment Methods -->
+        <mxCell id="payment_methods" value="Metode Pembayaran:&#xa;- Cash&#xa;- QRIS&#xa;- Transfer Bank" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="500" y="920" width="150" height="60" as="geometry" />
+        </mxCell>
+        
+        <!-- Update Stock -->
+        <mxCell id="update_stock" value="Update Stok Otomatis" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="500" y="1000" width="150" height="60" as="geometry" />
+        </mxCell>
+        
+        <!-- Print Receipt -->
+        <mxCell id="print_receipt" value="Print Struk" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="500" y="1080" width="150" height="60" as="geometry" />
+        </mxCell>
+        
+        <!-- Online Shopping Process (Pelanggan) -->
+        <mxCell id="online_start" value="Mulai Belanja Online" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="700" y="600" width="150" height="60" as="geometry" />
+        </mxCell>
+        
+        <!-- Browse Catalog -->
+        <mxCell id="browse_catalog" value="Browse Katalog Produk" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="700" y="700" width="150" height="60" as="geometry" />
+        </mxCell>
+        
+        <!-- Add to Shopping Cart -->
+        <mxCell id="add_shopping_cart" value="Tambah ke Shopping Cart" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="700" y="800" width="150" height="60" as="geometry" />
+        </mxCell>
+        
+        <!-- Checkout -->
+        <mxCell id="checkout" value="Proses Checkout" style="rhombus;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="700" y="900" width="150" height="80" as="geometry" />
+        </mxCell>
+        
+        <!-- Shipping Address -->
+        <mxCell id="shipping_address" value="Input Alamat Pengiriman" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="900" y="920" width="150" height="60" as="geometry" />
+        </mxCell>
+        
+        <!-- Payment Gateway -->
+        <mxCell id="payment_gateway" value="Integrasi Midtrans&#xa;(QRIS/Transfer)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="900" y="1000" width="150" height="60" as="geometry" />
+        </mxCell>
+        
+        <!-- Order Confirmation -->
+        <mxCell id="order_confirmation" value="Konfirmasi Pesanan" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="900" y="1080" width="150" height="60" as="geometry" />
+        </mxCell>
+        
+        <!-- Dashboard KPI Process (Pemilik) -->
+        <mxCell id="kpi_start" value="Akses Dashboard KPI" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="500" y="600" width="150" height="60" as="geometry" />
+        </mxCell>
+        
+        <!-- Query Data -->
+        <mxCell id="query_data" value="Query Data Transaksi" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="500" y="700" width="150" height="60" as="geometry" />
+        </mxCell>
+        
+        <!-- Calculate KPI -->
+        <mxCell id="calculate_kpi" value="Hitung KPI:&#xa;- Total Pendapatan&#xa;- Rata-rata Transaksi&#xa;- Produk Terlaris&#xa;- Analisis Trend" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="500" y="800" width="150" height="80" as="geometry" />
+        </mxCell>
+        
+        <!-- Generate Charts -->
+        <mxCell id="generate_charts" value="Generate Grafik &amp; Visualisasi" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="500" y="900" width="150" height="60" as="geometry" />
+        </mxCell>
+        
+        <!-- Display Dashboard -->
+        <mxCell id="display_dashboard" value="Tampilkan Dashboard Lengkap" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="500" y="1000" width="150" height="60" as="geometry" />
+        </mxCell>
+        
+        <!-- Admin Management Process -->
+        <mxCell id="admin_start" value="Kelola Pesanan/User" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="100" y="600" width="150" height="60" as="geometry" />
+        </mxCell>
+        
+        <!-- View Orders -->
+        <mxCell id="view_orders" value="Lihat Daftar Pesanan" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="100" y="700" width="150" height="60" as="geometry" />
+        </mxCell>
+        
+        <!-- Update Order Status -->
+        <mxCell id="update_order" value="Update Status Pesanan" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="100" y="800" width="150" height="60" as="geometry" />
+        </mxCell>
+        
+        <!-- User Management -->
+        <mxCell id="user_management" value="Kelola User &amp; Role" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="100" y="900" width="150" height="60" as="geometry" />
+        </mxCell>
+        
+        <!-- Logout -->
+        <mxCell id="logout" value="Logout" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=14;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="600" y="1200" width="200" height="60" as="geometry" />
+        </mxCell>
+        
+        <!-- End -->
+        <mxCell id="end" value="END" style="ellipse;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=16;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="600" y="1300" width="100" height="60" as="geometry" />
+        </mxCell>
+        
+        <!-- Connections -->
+        <!-- Start to Login -->
+        <mxCell id="edge1" edge="1" parent="1" source="start" target="login">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        
+        <!-- Login to Auth Check -->
+        <mxCell id="edge2" edge="1" parent="1" source="login" target="auth_check">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        
+        <!-- Auth Check to Invalid -->
+        <mxCell id="edge3" edge="1" parent="1" source="auth_check" target="invalid">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        
+        <!-- Auth Check to Role Check -->
+        <mxCell id="edge4" edge="1" parent="1" source="auth_check" target="role_check">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        
+        <!-- Role Check to Admin -->
+        <mxCell id="edge5" edge="1" parent="1" source="role_check" target="admin_dash">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        
+        <!-- Role Check to Kasir -->
+        <mxCell id="edge6" edge="1" parent="1" source="role_check" target="kasir_dash">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        
+        <!-- Role Check to Pemilik -->
+        <mxCell id="edge7" edge="1" parent="1" source="role_check" target="pemilik_dash">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        
+        <!-- Role Check to Pelanggan -->
+        <mxCell id="edge8" edge="1" parent="1" source="role_check" target="pelanggan_dash">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        
+        <!-- Kasir Dashboard to Transaction -->
+        <mxCell id="edge9" edge="1" parent="1" source="kasir_dash" target="transaction_start">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        
+        <!-- Transaction to Search -->
+        <mxCell id="edge10" edge="1" parent="1" source="transaction_start" target="search_product">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        
+        <!-- Search to Product Found -->
+        <mxCell id="edge11" edge="1" parent="1" source="search_product" target="product_found">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        
+        <!-- Product Found to Add Cart -->
+        <mxCell id="edge12" edge="1" parent="1" source="product_found" target="add_cart">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        
+        <!-- Add Cart to Payment -->
+        <mxCell id="edge13" edge="1" parent="1" source="add_cart" target="payment">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        
+        <!-- Payment to Methods -->
+        <mxCell id="edge14" edge="1" parent="1" source="payment" target="payment_methods">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        
+        <!-- Methods to Update Stock -->
+        <mxCell id="edge15" edge="1" parent="1" source="payment_methods" target="update_stock">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        
+        <!-- Update Stock to Print -->
+        <mxCell id="edge16" edge="1" parent="1" source="update_stock" target="print_receipt">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        
+        <!-- Pelanggan Dashboard to Online -->
+        <mxCell id="edge17" edge="1" parent="1" source="pelanggan_dash" target="online_start">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        
+        <!-- Online to Browse -->
+        <mxCell id="edge18" edge="1" parent="1" source="online_start" target="browse_catalog">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        
+        <!-- Browse to Add Cart -->
+        <mxCell id="edge19" edge="1" parent="1" source="browse_catalog" target="add_shopping_cart">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        
+        <!-- Add Cart to Checkout -->
+        <mxCell id="edge20" edge="1" parent="1" source="add_shopping_cart" target="checkout">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        
+        <!-- Checkout to Shipping -->
+        <mxCell id="edge21" edge="1" parent="1" source="checkout" target="shipping_address">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        
+        <!-- Shipping to Payment Gateway -->
+        <mxCell id="edge22" edge="1" parent="1" source="shipping_address" target="payment_gateway">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        
+        <!-- Gateway to Confirmation -->
+        <mxCell id="edge23" edge="1" parent="1" source="payment_gateway" target="order_confirmation">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        
+        <!-- Pemilik Dashboard to KPI -->
+        <mxCell id="edge24" edge="1" parent="1" source="pemilik_dash" target="kpi_start">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        
+        <!-- KPI to Query -->
+        <mxCell id="edge25" edge="1" parent="1" source="kpi_start" target="query_data">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        
+        <!-- Query to Calculate -->
+        <mxCell id="edge26" edge="1" parent="1" source="query_data" target="calculate_kpi">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        
+        <!-- Calculate to Charts -->
+        <mxCell id="edge27" edge="1" parent="1" source="calculate_kpi" target="generate_charts">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        
+        <!-- Charts to Display -->
+        <mxCell id="edge28" edge="1" parent="1" source="generate_charts" target="display_dashboard">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        
+        <!-- Admin Dashboard to Management -->
+        <mxCell id="edge29" edge="1" parent="1" source="admin_dash" target="admin_start">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        
+        <!-- Admin to View Orders -->
+        <mxCell id="edge30" edge="1" parent="1" source="admin_start" target="view_orders">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        
+        <!-- View Orders to Update -->
+        <mxCell id="edge31" edge="1" parent="1" source="view_orders" target="update_order">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        
+        <!-- Update to User Management -->
+        <mxCell id="edge32" edge="1" parent="1" source="update_order" target="user_management">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        
+        <!-- All to Logout -->
+        <mxCell id="edge33" edge="1" parent="1" source="print_receipt" target="logout">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="edge34" edge="1" parent="1" source="order_confirmation" target="logout">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="edge35" edge="1" parent="1" source="display_dashboard" target="logout">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="edge36" edge="1" parent="1" source="user_management" target="logout">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        
+        <!-- Logout to End -->
+        <mxCell id="edge37" edge="1" parent="1" source="logout" target="end">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        
+        <!-- Labels -->
+        <mxCell id="label1" value="Valid" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=12;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="650" y="340" width="30" height="20" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="label2" value="Admin" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=12;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="500" y="500" width="40" height="20" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="label3" value="Kasir" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=12;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="700" y="500" width="30" height="20" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="label4" value="Pemilik" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=12;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="900" y="500" width="40" height="20" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="label5" value="Pelanggan" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=12;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="1100" y="500" width="50" height="20" as="geometry" />
+        </mxCell>
+        
+        <!-- Legend -->
+        <mxCell id="legend" value="KETERANGAN FLOW:" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=14;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="100" y="1400" width="200" height="30" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="legend_start" value="START/END: Titik awal dan akhir sistem" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="100" y="1430" width="300" height="20" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="legend_process" value="PROCESS: Proses yang dilakukan sistem" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="100" y="1450" width="300" height="20" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="legend_decision" value="DECISION: Keputusan/validasi yang harus dibuat" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="100" y="1470" width="300" height="20" as="geometry" />
+        </mxCell>
+        
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

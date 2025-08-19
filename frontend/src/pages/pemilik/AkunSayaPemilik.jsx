@@ -127,16 +127,16 @@ const AkunSayaPemilik = () => {
 
   return (
     <div className="flex-1 p-8 bg-gray-50">
-      <h1 className="text-4xl font-bold text-gray-800 mb-8">Akun Saya</h1>
+      <h1 className="text-4xl font-bold text-gray-800 mb-8">Akun</h1>
 
       {error && (
-        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-6">
+        <div className="mb-4 p-4 bg-red-100 border border-red-400 text-red-700 rounded-lg">
           {error}
         </div>
       )}
 
       {success && (
-        <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-6">
+        <div className="mb-4 p-4 bg-green-100 border border-green-400 text-green-700 rounded-lg">
           {success}
         </div>
       )}
@@ -179,7 +179,7 @@ const AkunSayaPemilik = () => {
                   name="current_password" 
                   value={formData.current_password}
                   onChange={handleInputChange}
-                  className="w-full p-3 border border-gray-300 rounded-lg" 
+                  className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" 
                 />
               </div>
               <div>
@@ -190,7 +190,7 @@ const AkunSayaPemilik = () => {
                   name="new_password" 
                   value={formData.new_password}
                   onChange={handleInputChange}
-                  className="w-full p-3 border border-gray-300 rounded-lg" 
+                  className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" 
                 />
               </div>
               <div>
@@ -201,7 +201,7 @@ const AkunSayaPemilik = () => {
                   name="confirm_password" 
                   value={formData.confirm_password}
                   onChange={handleInputChange}
-                  className="w-full p-3 border border-gray-300 rounded-lg" 
+                  className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" 
                 />
               </div>
 

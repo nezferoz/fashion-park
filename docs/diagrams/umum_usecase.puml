@@ -1,0 +1,109 @@
+@startuml
+left to right direction
+skinparam actorStyle awesome
+skinparam usecase {
+  BackgroundColor LightGoldenrodYellow
+  BorderColor DarkGoldenrod
+  FontColor Black
+}
+skinparam rectangle {
+  BackgroundColor LightYellow
+  BorderColor DarkOrange
+}
+skinparam actor {
+  BackgroundColor LightGreen
+  BorderColor DarkGreen
+}
+skinparam package {
+  BackgroundColor LightGray
+  BorderColor DarkGray
+}
+
+actor "Pemilik" as Owner
+actor Admin
+actor Kasir
+actor "Pelanggan" as Customer
+
+rectangle "Sistem Fashion Park" {
+  
+  package "Autentikasi" {
+    usecase "Login" as Login
+    usecase "Input Kredensial" as Login_Input
+    usecase "Validasi" as Login_Validate
+    usecase "Remember Me" as Login_Remember
+    usecase "Forgot Password" as Login_Forgot
+  }
+
+  package "Session Management" {
+    usecase "Logout" as Logout
+    usecase "End Session" as Logout_End
+    usecase "Clear Cache" as Logout_Clear
+    usecase "Redirect" as Logout_Redirect
+  }
+
+  package "Manajemen Profil" {
+    usecase "Update Profil" as Profile
+    usecase "Edit Data Pribadi" as Profile_Edit
+    usecase "Upload Foto" as Profile_Photo
+    usecase "Change Password" as Profile_ChangePass
+    usecase "Update Alamat" as Profile_Address
+  }
+
+  package "Reset Password" {
+    usecase "Reset Password" as Reset
+    usecase "Request Reset" as Reset_Request
+    usecase "Verifikasi Email" as Reset_Verify
+    usecase "Set Password Baru" as Reset_New
+    usecase "Konfirmasi Password" as Reset_Confirm
+  }
+
+  ' Login Relationships
+  Login .> Login_Input : <<include>>
+  Login .> Login_Validate : <<include>>
+  Login .> Login_Remember : <<include>>
+  Login .> Login_Forgot : <<extend>>
+
+  ' Logout Relationships
+  Logout .> Logout_End : <<include>>
+  Logout .> Logout_Clear : <<include>>
+  Logout .> Logout_Redirect : <<include>>
+
+  ' Profile Relationships
+  Profile .> Profile_Edit : <<include>>
+  Profile .> Profile_Photo : <<include>>
+  Profile .> Profile_ChangePass : <<include>>
+  Profile .> Profile_Address : <<include>>
+
+  ' Reset Relationships
+  Reset .> Reset_Request : <<include>>
+  Reset .> Reset_Verify : <<include>>
+  Reset .> Reset_New : <<include>>
+  Reset .> Reset_Confirm : <<include>>
+}
+
+' Actor Connections - Owner
+Owner --> Login
+Owner --> Logout
+Owner --> Profile
+Owner --> Reset
+
+' Actor Connections - Admin
+Admin --> Login
+Admin --> Logout
+Admin --> Profile
+Admin --> Reset
+
+' Actor Connections - Kasir
+Kasir --> Login
+Kasir --> Logout
+Kasir --> Profile
+Kasir --> Reset
+
+' Actor Connections - Customer
+Customer --> Login
+Customer --> Logout
+Customer --> Profile
+Customer --> Reset
+
+title "Use Case Diagram - Fitur Umum (Common Features)\nSistem Fashion Park"
+@enduml

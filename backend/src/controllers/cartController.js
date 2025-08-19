@@ -2,7 +2,7 @@ const cartModel = require('../models/cartModel');
 
 const getByUserId = async (req, res) => {
   try {
-    const user_id = req.user.user_id;
+    const user_id = req.user.user_id || req.user.userId;
     const cart = await cartModel.getCartByUserId(user_id);
     res.json(cart);
   } catch (err) {
@@ -12,7 +12,7 @@ const getByUserId = async (req, res) => {
 
 const addOrUpdate = async (req, res) => {
   try {
-    const user_id = req.user.user_id;
+    const user_id = req.user.user_id || req.user.userId;
     const { product_id, variant_id, quantity } = req.body;
     if (!product_id || !variant_id || !quantity) return res.status(400).json({ message: 'product_id, variant_id, quantity wajib diisi' });
     await cartModel.addOrUpdateCart(user_id, product_id, variant_id, quantity);
@@ -24,7 +24,7 @@ const addOrUpdate = async (req, res) => {
 
 const remove = async (req, res) => {
   try {
-    const user_id = req.user.user_id;
+    const user_id = req.user.user_id || req.user.userId;
     const { product_id, variant_id } = req.body;
     await cartModel.removeCartItem(user_id, product_id, variant_id);
     res.json({ message: 'Item cart dihapus' });
@@ -35,7 +35,7 @@ const remove = async (req, res) => {
 
 const clear = async (req, res) => {
   try {
-    const user_id = req.user.user_id;
+    const user_id = req.user.user_id || req.user.userId;
     await cartModel.clearCart(user_id);
     res.json({ message: 'Cart dikosongkan' });
   } catch (err) {

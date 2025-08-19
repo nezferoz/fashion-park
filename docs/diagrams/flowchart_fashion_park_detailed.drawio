@@ -1,0 +1,378 @@
+<mxfile host="app.diagrams.net" modified="2024-01-01T00:00:00.000Z" agent="5.0" etag="xxx" version="22.1.16" type="device">
+  <diagram name="Flowchart Fashion Park Detailed" id="flowchart-fashion-park-detailed">
+    <mxGraphModel dx="1422" dy="794" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1800" pageHeight="1400" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        
+        <!-- Title -->
+        <mxCell id="title" value="FLOWCHART ALUR SISTEM FASHION PARK" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=20;fontStyle=1;fontColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="700" y="20" width="400" height="40" as="geometry" />
+        </mxCell>
+        
+        <!-- Start -->
+        <mxCell id="start" value="START" style="ellipse;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontColor=#000000;fontSize=14;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="850" y="80" width="100" height="60" as="geometry" />
+        </mxCell>
+        
+        <!-- Homepage -->
+        <mxCell id="homepage" value="HOMEPAGE" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontColor=#000000;fontSize=14;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="850" y="180" width="100" height="60" as="geometry" />
+        </mxCell>
+        
+        <!-- Login Decision -->
+        <mxCell id="login_decision" value="User Login?" style="rhombus;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontColor=#000000;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="850" y="280" width="100" height="80" as="geometry" />
+        </mxCell>
+        
+        <!-- Guest Flow -->
+        <mxCell id="guest_flow" value="GUEST MODE" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontColor=#000000;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="1050" y="290" width="100" height="60" as="geometry" />
+        </mxCell>
+        
+        <!-- Guest Actions -->
+        <mxCell id="guest_actions" value="• Browse Katalog&#xa;• Lihat Produk&#xa;• Filter & Search&#xa;• Lihat Detail Produk&#xa;• Lihat Harga" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontColor=#000000;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="1050" y="380" width="120" height="100" as="geometry" />
+        </mxCell>
+        
+        <!-- Register Decision -->
+        <mxCell id="register_decision" value="Mau Register?" style="rhombus;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontColor=#000000;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="1050" y="520" width="120" height="80" as="geometry" />
+        </mxCell>
+        
+        <!-- Registration -->
+        <mxCell id="registration" value="REGISTRASI" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontColor=#000000;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="1050" y="640" width="120" height="60" as="geometry" />
+        </mxCell>
+        
+        <!-- Login Form -->
+        <mxCell id="login_form" value="LOGIN FORM" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontColor=#000000;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="850" y="400" width="100" height="60" as="geometry" />
+        </mxCell>
+        
+        <!-- Authentication -->
+        <mxCell id="auth" value="AUTHENTICATION" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontColor=#000000;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="850" y="500" width="100" height="60" as="geometry" />
+        </mxCell>
+        
+        <!-- Role Check -->
+        <mxCell id="role_check" value="Check User Role" style="rhombus;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontColor=#000000;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="850" y="600" width="100" height="80" as="geometry" />
+        </mxCell>
+        
+        <!-- PEMILIK Dashboard -->
+        <mxCell id="owner_dashboard" value="PEMILIK DASHBOARD" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontColor=#000000;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="650" y="720" width="120" height="60" as="geometry" />
+        </mxCell>
+        
+        <!-- ADMIN Dashboard -->
+        <mxCell id="admin_dashboard" value="ADMIN DASHBOARD" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontColor=#000000;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="850" y="720" width="120" height="60" as="geometry" />
+        </mxCell>
+        
+        <!-- KASIR Dashboard -->
+        <mxCell id="kasir_dashboard" value="KASIR DASHBOARD" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontColor=#000000;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="1050" y="720" width="120" height="60" as="geometry" />
+        </mxCell>
+        
+        <!-- PELANGGAN Dashboard -->
+        <mxCell id="customer_dashboard" value="PELANGGAN DASHBOARD" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontColor=#000000;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="1250" y="720" width="120" height="60" as="geometry" />
+        </mxCell>
+        
+        <!-- PEMILIK Features -->
+        <mxCell id="owner_features" value="• Dashboard KPI & Analytics&#xa;• Total Pendapatan (Rp 1.0M)&#xa;• Nilai Transaksi Rata-rata&#xa;• Grafik Pertumbuhan Pendapatan&#xa;• Ringkasan Kinerja Toko&#xa;&#xa;Navigation Menu:&#xa;• Laporan Penjualan&#xa;• Riwayat Transaksi&#xa;• Akun" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontColor=#000000;fontSize=9;" vertex="1" parent="1">
+          <mxGeometry x="650" y="820" width="120" height="120" as="geometry" />
+        </mxCell>
+        
+        <!-- ADMIN Features -->
+        <mxCell id="admin_features" value="• Dashboard Statistik&#xa;• Kelola Pesanan&#xa;• Kelola User & Role&#xa;• Kelola Kategori Produk&#xa;• Monitoring Sistem" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontColor=#000000;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="850" y="820" width="120" height="100" as="geometry" />
+        </mxCell>
+        
+        <!-- KASIR Features -->
+        <mxCell id="kasir_features" value="• Pencarian Barang&#xa;• Proses Transaksi&#xa;• Scan Barcode/QR&#xa;• Lihat Stok Real-time&#xa;• Print Struk" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontColor=#000000;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="1050" y="820" width="120" height="100" as="geometry" />
+        </mxCell>
+        
+        <!-- PELANGGAN Features -->
+        <mxCell id="customer_features" value="• Shopping Cart&#xa;• Checkout Process&#xa;• Tracking Pesanan&#xa;• Review & Rating&#xa;• Riwayat Belanja" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontColor=#000000;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="1250" y="820" width="120" height="100" as="geometry" />
+        </mxCell>
+        
+        <!-- Shopping Flow -->
+        <mxCell id="shopping_flow" value="SHOPPING PROCESS" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontColor=#000000;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="1250" y="960" width="120" height="60" as="geometry" />
+        </mxCell>
+        
+        <!-- Shopping Steps -->
+        <mxCell id="shopping_steps" value="1. Tambah ke Cart&#xa;2. Review Cart&#xa;3. Checkout&#xa;4. Pilih Pembayaran&#xa;5. Konfirmasi Order&#xa;6. Proses Pembayaran" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontColor=#000000;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="1250" y="1050" width="120" height="120" as="geometry" />
+        </mxCell>
+        
+        <!-- Payment Gateway -->
+        <mxCell id="payment" value="PAYMENT SYSTEM" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontColor=#000000;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="1050" y="960" width="120" height="60" as="geometry" />
+        </mxCell>
+        
+        <!-- Payment Methods -->
+        <mxCell id="payment_methods" value="• Cash on Delivery&#xa;• Transfer Bank&#xa;• QRIS Payment&#xa;• E-Wallet (OVO, DANA)&#xa;• Credit Card" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontColor=#000000;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="1050" y="1050" width="120" height="100" as="geometry" />
+        </mxCell>
+        
+        <!-- Order Processing -->
+        <mxCell id="order_processing" value="ORDER MANAGEMENT" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontColor=#000000;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="850" y="960" width="120" height="60" as="geometry" />
+        </mxCell>
+        
+        <!-- Order Status -->
+        <mxCell id="order_status" value="• Pending&#xa;• Processing&#xa;• Shipped&#xa;• Delivered&#xa;• Completed" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontColor=#000000;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="850" y="1050" width="120" height="100" as="geometry" />
+        </mxCell>
+        
+        <!-- Logout -->
+        <mxCell id="logout" value="LOGOUT" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontColor=#000000;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="650" y="960" width="120" height="60" as="geometry" />
+        </mxCell>
+        
+        <!-- End -->
+        <mxCell id="end" value="END" style="ellipse;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontColor=#000000;fontSize=14;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="650" y="1050" width="120" height="60" as="geometry" />
+        </mxCell>
+        
+        <!-- Connections -->
+        <!-- Start to Homepage -->
+        <mxCell id="conn1" value="" style="endArrow=classic;html=1;rounded=0;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;strokeColor=#000000;strokeWidth=2;" edge="1" parent="1" source="start" target="homepage">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="400" y="400" as="sourcePoint" />
+            <mxPoint x="450" y="350" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        
+        <!-- Homepage to Login Decision -->
+        <mxCell id="conn2" value="" style="endArrow=classic;html=1;rounded=0;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;strokeColor=#000000;strokeWidth=2;" edge="1" parent="1" source="homepage" target="login_decision">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="400" y="400" as="sourcePoint" />
+            <mxPoint x="450" y="350" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        
+        <!-- Login Decision to Guest Flow -->
+        <mxCell id="conn3" value="NO" style="endArrow=classic;html=1;rounded=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;strokeColor=#000000;strokeWidth=2;" edge="1" parent="1" source="login_decision" target="guest_flow">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="400" y="400" as="sourcePoint" />
+            <mxPoint x="450" y="350" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        
+        <!-- Guest Flow to Guest Actions -->
+        <mxCell id="conn4" value="" style="endArrow=classic;html=1;rounded=0;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;strokeColor=#000000;strokeWidth=2;" edge="1" parent="1" source="guest_flow" target="guest_actions">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="400" y="400" as="sourcePoint" />
+            <mxPoint x="450" y="350" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        
+        <!-- Guest Actions to Register Decision -->
+        <mxCell id="conn5" value="" style="endArrow=classic;html=1;rounded=0;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;strokeColor=#000000;strokeWidth=2;" edge="1" parent="1" source="guest_actions" target="register_decision">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="400" y="400" as="sourcePoint" />
+            <mxPoint x="450" y="350" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        
+        <!-- Register Decision to Registration -->
+        <mxCell id="conn6" value="YES" style="endArrow=classic;html=1;rounded=0;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;strokeColor=#000000;strokeWidth=2;" edge="1" parent="1" source="register_decision" target="registration">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="400" y="400" as="sourcePoint" />
+            <mxPoint x="450" y="350" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        
+        <!-- Registration to Login Form -->
+        <mxCell id="conn7" value="" style="endArrow=classic;html=1;rounded=0;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;strokeColor=#000000;strokeWidth=2;" edge="1" parent="1" source="registration" target="login_form">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="400" y="400" as="sourcePoint" />
+            <mxPoint x="450" y="350" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        
+        <!-- Login Decision to Login Form -->
+        <mxCell id="conn8" value="YES" style="endArrow=classic;html=1;rounded=0;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;strokeColor=#000000;strokeWidth=2;" edge="1" parent="1" source="login_decision" target="login_form">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="400" y="400" as="sourcePoint" />
+            <mxPoint x="450" y="350" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        
+        <!-- Login Form to Authentication -->
+        <mxCell id="conn9" value="" style="endArrow=classic;html=1;rounded=0;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;strokeColor=#000000;strokeWidth=2;" edge="1" parent="1" source="login_form" target="auth">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="400" y="400" as="sourcePoint" />
+            <mxPoint x="450" y="350" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        
+        <!-- Authentication to Role Check -->
+        <mxCell id="conn10" value="" style="endArrow=classic;html=1;rounded=0;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;strokeColor=#000000;strokeWidth=2;" edge="1" parent="1" source="auth" target="role_check">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="400" y="400" as="sourcePoint" />
+            <mxPoint x="450" y="350" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        
+        <!-- Role Check to PEMILIK -->
+        <mxCell id="conn11" value="PEMILIK" style="endArrow=classic;html=1;rounded=0;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;strokeColor=#000000;strokeWidth=2;" edge="1" parent="1" source="role_check" target="owner_dashboard">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="400" y="400" as="sourcePoint" />
+            <mxPoint x="450" y="350" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        
+        <!-- Role Check to ADMIN -->
+        <mxCell id="conn12" value="ADMIN" style="endArrow=classic;html=1;rounded=0;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;strokeColor=#000000;strokeWidth=2;" edge="1" parent="1" source="role_check" target="admin_dashboard">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="400" y="400" as="sourcePoint" />
+            <mxPoint x="450" y="350" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        
+        <!-- Role Check to KASIR -->
+        <mxCell id="conn13" value="KASIR" style="endArrow=classic;html=1;rounded=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;strokeColor=#000000;strokeWidth=2;" edge="1" parent="1" source="role_check" target="kasir_dashboard">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="400" y="400" as="sourcePoint" />
+            <mxPoint x="450" y="350" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        
+        <!-- Role Check to PELANGGAN -->
+        <mxCell id="conn14" value="PELANGGAN" style="endArrow=classic;html=1;rounded=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;strokeColor=#000000;strokeWidth=2;" edge="1" parent="1" source="role_check" target="customer_dashboard">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="400" y="400" as="sourcePoint" />
+            <mxPoint x="450" y="350" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        
+        <!-- Dashboards to Features -->
+        <mxCell id="conn15" value="" style="endArrow=classic;html=1;rounded=0;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;strokeColor=#000000;strokeWidth=2;" edge="1" parent="1" source="owner_dashboard" target="owner_features">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="400" y="400" as="sourcePoint" />
+            <mxPoint x="450" y="350" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        
+        <mxCell id="conn16" value="" style="endArrow=classic;html=1;rounded=0;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;strokeColor=#000000;strokeWidth=2;" edge="1" parent="1" source="admin_dashboard" target="admin_features">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="400" y="400" as="sourcePoint" />
+            <mxPoint x="450" y="350" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        
+        <mxCell id="conn17" value="" style="endArrow=classic;html=1;rounded=0;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;strokeColor=#000000;strokeWidth=2;" edge="1" parent="1" source="kasir_dashboard" target="kasir_features">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="400" y="400" as="sourcePoint" />
+            <mxPoint x="450" y="350" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        
+        <mxCell id="conn18" value="" style="endArrow=classic;html=1;rounded=0;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;strokeColor=#000000;strokeWidth=2;" edge="1" parent="1" source="customer_dashboard" target="customer_features">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="400" y="400" as="sourcePoint" />
+            <mxPoint x="450" y="350" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        
+        <!-- Features to Next Steps -->
+        <mxCell id="conn19" value="" style="endArrow=classic;html=1;rounded=0;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;strokeColor=#000000;strokeWidth=2;" edge="1" parent="1" source="owner_features" target="logout">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="400" y="400" as="sourcePoint" />
+            <mxPoint x="450" y="350" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        
+        <mxCell id="conn20" value="" style="endArrow=classic;html=1;rounded=0;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;strokeColor=#000000;strokeWidth=2;" edge="1" parent="1" source="admin_features" target="order_processing">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="400" y="400" as="sourcePoint" />
+            <mxPoint x="450" y="350" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        
+        <mxCell id="conn21" value="" style="endArrow=classic;html=1;rounded=0;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;strokeColor=#000000;strokeWidth=2;" edge="1" parent="1" source="kasir_features" target="payment">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="400" y="400" as="sourcePoint" />
+            <mxPoint x="450" y="350" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        
+        <mxCell id="conn22" value="" style="endArrow=classic;html=1;rounded=0;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;strokeColor=#000000;strokeWidth=2;" edge="1" parent="1" source="customer_features" target="shopping_flow">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="400" y="400" as="sourcePoint" />
+            <mxPoint x="450" y="350" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        
+        <!-- Next Steps to Details -->
+        <mxCell id="conn23" value="" style="endArrow=classic;html=1;rounded=0;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;strokeColor=#000000;strokeWidth=2;" edge="1" parent="1" source="order_processing" target="order_status">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="400" y="400" as="sourcePoint" />
+            <mxPoint x="450" y="350" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        
+        <mxCell id="conn24" value="" style="endArrow=classic;html=1;rounded=0;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;strokeColor=#000000;strokeWidth=2;" edge="1" parent="1" source="payment" target="payment_methods">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="400" y="400" as="sourcePoint" />
+            <mxPoint x="450" y="350" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        
+        <mxCell id="conn25" value="" style="endArrow=classic;html=1;rounded=0;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;strokeColor=#000000;strokeWidth=2;" edge="1" parent="1" source="shopping_flow" target="shopping_steps">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="400" y="400" as="sourcePoint" />
+            <mxPoint x="450" y="350" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        
+        <!-- Details to End -->
+        <mxCell id="conn26" value="" style="endArrow=classic;html=1;rounded=0;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;strokeColor=#000000;strokeWidth=2;" edge="1" parent="1" source="order_status" target="end">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="400" y="400" as="sourcePoint" />
+            <mxPoint x="450" y="350" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        
+        <mxCell id="conn27" value="" style="endArrow=classic;html=1;rounded=0;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;strokeColor=#000000;strokeWidth=2;" edge="1" parent="1" source="payment_methods" target="end">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="400" y="400" as="sourcePoint" />
+            <mxPoint x="450" y="350" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        
+        <mxCell id="conn28" value="" style="endArrow=classic;html=1;rounded=0;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;strokeColor=#000000;strokeWidth=2;" edge="1" parent="1" source="shopping_steps" target="end">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="400" y="400" as="sourcePoint" />
+            <mxPoint x="450" y="350" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        
+        <mxCell id="conn29" value="" style="endArrow=classic;html=1;rounded=0;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;strokeColor=#000000;strokeWidth=2;" edge="1" parent="1" source="logout" target="end">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="400" y="400" as="sourcePoint" />
+            <mxPoint x="450" y="350" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        
+        <!-- Legend -->
+        <mxCell id="legend" value="LEGENDA SISTEM:&#xa;&#xa;🔵 START/END: Titik awal dan akhir sistem&#xa;🟡 DECISION: Keputusan/percabangan logika&#xa;🟢 PROCESS: Proses/langkah kerja&#xa;🟠 FEATURES: Fitur-fitur per role&#xa;🔴 FLOW: Alur kerja sistem&#xa;&#xa;WARNA:&#xa;• Hijau: Start/End & Dashboard&#xa;• Biru: Login & Authentication&#xa;• Ungu: Guest Mode & Registration&#xa;• Orange: Shopping & Payment&#xa;• Merah: Logout & End" style="text;html=1;strokeColor=#000000;fillColor=#ffffff;align=left;verticalAlign=top;whiteSpace=wrap;rounded=1;fontSize=10;fontColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="50" y="1000" width="350" height="200" as="geometry" />
+        </mxCell>
+        
+        <!-- Additional Info -->
+        <mxCell id="info" value="INFORMASI SISTEM FASHION PARK:&#xa;&#xa;• Total Role: 4 (PEMILIK, ADMIN, KASIR, PELANGGAN)&#xa;• Total Fitur: 20+ fitur utama&#xa;• Alur Utama: 29 koneksi&#xa;• Metode Pembayaran: 5 jenis&#xa;• Status Order: 5 tahap&#xa;• Guest Mode: Tanpa login&#xa;• Security: Role-based access control&#xa;&#xa;FITUR PEMILIK:&#xa;• Dashboard KPI dengan grafik pendapatan&#xa;• Total Pendapatan: Rp 1.0M (+100% vs bulan lalu)&#xa;• Nilai Transaksi Rata-rata: Rp 500.0K&#xa;• Monitoring produk terlaris & total transaksi" style="text;html=1;strokeColor=#000000;fillColor=#f0f0f0;align=left;verticalAlign=top;whiteSpace=wrap;rounded=1;fontSize=9;fontColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="50" y="1220" width="350" height="180" as="geometry" />
+        </mxCell>
+        
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

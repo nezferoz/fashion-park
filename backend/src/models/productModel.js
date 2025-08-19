@@ -4,12 +4,25 @@ const getAllProducts = async () => {
   const [rows] = await db.query(
     `SELECT p.*, c.category_name,
       (SELECT image_id FROM product_images WHERE product_id = p.product_id ORDER BY image_id ASC LIMIT 1) as main_image_id,
-      COALESCE((SELECT SUM(stock_quantity) FROM product_variants WHERE product_id = p.product_id), 0) as total_stock
+      COALESCE((SELECT SUM(stock_quantity) FROM product_variants WHERE product_id = p.product_id AND is_active = 1), 0) as total_stock,
+      COALESCE(p.weight, 0) as weight,
+      (SELECT COUNT(*) FROM product_images WHERE product_id = p.product_id) as image_count,
+      (SELECT COUNT(*) FROM product_variants WHERE product_id = p.product_id AND is_active = 1) as variant_count
     FROM products p
     LEFT JOIN categories c ON p.category_id = c.category_id
     ORDER BY p.product_name`
   );
-  return rows;
+  
+  // Ensure all products have at least a placeholder image_id and proper stock data
+  return rows.map(row => ({
+    ...row,
+    main_image_id: row.main_image_id || null,
+    total_stock: parseInt(row.total_stock) || 0,
+    has_images: (row.image_count || 0) > 0,
+    has_variants: (row.variant_count || 0) > 0,
+    // Remove conflicting stock_quantity field
+    stock_quantity: undefined
+  }));
 };
 
 const getProductById = async (id) => {
@@ -34,19 +47,19 @@ const getProductWithVariantsById = async (id) => {
 };
 
 const createProduct = async (product) => {
-  const { product_name, description, price, stock_quantity, barcode, category_id, is_active } = product;
+  const { product_name, description, price, category_id, is_active, weight } = product;
   const [result] = await db.query(
-    `INSERT INTO products (product_name, description, price, stock_quantity, barcode, category_id, is_active) VALUES (?, ?, ?, ?, ?, ?, ?)`,
-    [product_name, description, price, stock_quantity, barcode, category_id, is_active ?? true]
+    `INSERT INTO products (product_name, description, price, category_id, is_active, weight) VALUES (?, ?, ?, ?, ?, ?)`,
+    [product_name, description, price, category_id, is_active ?? true, weight || 0]
   );
   return result.insertId;
 };
 
 const updateProduct = async (id, product) => {
-  const { product_name, description, price, stock_quantity, barcode, category_id, is_active } = product;
+  const { product_name, description, price, category_id, is_active, weight } = product;
   await db.query(
-    `UPDATE products SET product_name=?, description=?, price=?, stock_quantity=?, barcode=?, category_id=?, is_active=? WHERE product_id=?`,
-    [product_name, description, price, stock_quantity, barcode, category_id, is_active ?? true, id]
+    `UPDATE products SET product_name=?, description=?, price=?, category_id=?, is_active=?, weight=? WHERE product_id=?`,
+    [product_name, description, price, category_id, is_active ?? true, weight || 0, id]
   );
 };
 
@@ -86,9 +99,32 @@ const updateVariantStock = async (variant_id, delta) => {
 };
 
 const addProductVariant = async (product_id, size, stock_quantity) => {
+  // Generate barcode unik berbasis product_id dan size
+  let barcode = `${product_id}`;
+  if (size && size.trim() !== '') {
+    barcode = `${product_id}-${size}`;
+  }
+  // Generate SKU unik
+  let sku = `${product_id}`;
+  if (size && size.trim() !== '') {
+    sku = `${product_id}-${size}-SKU`;
+  } else {
+    sku = `${product_id}-SKU`;
+  }
+  // Pastikan barcode dan sku unik
+  let uniqueBarcode = barcode;
+  let uniqueSku = sku;
+  let i = 1;
+  while (true) {
+    const [rows] = await db.query('SELECT 1 FROM product_variants WHERE barcode = ? OR sku = ?', [uniqueBarcode, uniqueSku]);
+    if (rows.length === 0) break;
+    uniqueBarcode = `${barcode}-${i}`;
+    uniqueSku = `${sku}-${i}`;
+    i++;
+  }
   const [result] = await db.query(
-    `INSERT INTO product_variants (product_id, size, stock_quantity) VALUES (?, ?, ?)`,
-    [product_id, size, stock_quantity]
+    `INSERT INTO product_variants (product_id, size, stock_quantity, barcode, sku) VALUES (?, ?, ?, ?, ?)`,
+    [product_id, size, stock_quantity, uniqueBarcode, uniqueSku]
   );
   return result.insertId;
 };
@@ -121,6 +157,24 @@ const getVariantsByProductIds = async (productIds) => {
   return rows;
 };
 
+const getVariantsByIds = async (variantIds) => {
+  if (!variantIds || variantIds.length === 0) return [];
+  const [rows] = await db.query(
+    `SELECT v.*, p.product_name FROM product_variants v JOIN products p ON v.product_id = p.product_id WHERE v.variant_id IN (${variantIds.map(() => '?').join(',')})`,
+    variantIds
+  );
+  return rows;
+};
+
+const getProductsByIds = async (productIds) => {
+  if (!productIds || productIds.length === 0) return [];
+  const [rows] = await db.query(
+    `SELECT product_id, product_name, barcode FROM products WHERE product_id IN (${productIds.map(() => '?').join(',')})`,
+    productIds
+  );
+  return rows;
+};
+
 module.exports = {
   getAllProducts,
   getProductById,
@@ -137,4 +191,6 @@ module.exports = {
   deleteProductVariant,
   deleteProductImageById,
   getVariantsByProductIds, // <--- export fungsi baru
+  getVariantsByIds, // <--- export untuk print barcode massal
+  getProductsByIds, // <-- export baru
 }; 

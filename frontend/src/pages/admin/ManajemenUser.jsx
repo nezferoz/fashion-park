@@ -1,14 +1,29 @@
-import React, { useEffect, useState } from "react";
+import React, { useState, useEffect } from "react";
 import api from "../../utils/api";
+import { FaEdit, FaTrash, FaPlus, FaEye, FaToggleOn, FaToggleOff, FaFilter } from "react-icons/fa";
 
 const ManajemenUser = () => {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-  const [showForm, setShowForm] = useState(false);
-  const [form, setForm] = useState({ name: "", email: "", password: "", address: "", phone: "", role: "pelanggan" });
-  const [editId, setEditId] = useState(null);
-  const [success, setSuccess] = useState("");
+  const [showAddModal, setShowAddModal] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [showDetailModal, setShowDetailModal] = useState(false);
+  const [selectedUser, setSelectedUser] = useState(null);
+  const [filterRole, setFilterRole] = useState("all");
+  const [searchTerm, setSearchTerm] = useState("");
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    password: "",
+    phone: "",
+    address: "",
+    role: "pelanggan"
+  });
+
+  useEffect(() => {
+    fetchUsers();
+  }, []);
 
   const fetchUsers = async () => {
     setLoading(true);
@@ -16,150 +31,429 @@ const ManajemenUser = () => {
     try {
       const res = await api.get("/users");
       setUsers(res.data);
-    } catch {
+    } catch (err) {
+      console.error("Error fetching users:", err);
       setError("Gagal mengambil data user");
     }
     setLoading(false);
   };
 
-  useEffect(() => {
-    fetchUsers();
-  }, []);
-
-  const handleChange = (e) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
-  };
-
   const handleAdd = () => {
-    setForm({ name: "", email: "", password: "", address: "", phone: "", role: "pelanggan" });
-    setEditId(null);
-    setShowForm(true);
-    setSuccess("");
-    setError("");
+    setFormData({
+      name: "",
+      email: "",
+      password: "",
+      phone: "",
+      address: "",
+      role: "pelanggan"
+    });
+    setShowAddModal(true);
   };
 
   const handleEdit = (user) => {
-    setForm({
-      name: user.name,
-      email: user.email,
+    setSelectedUser(user);
+    setFormData({
+      name: user.name || "",
+      email: user.email || "",
       password: "",
-      address: user.address || "",
       phone: user.phone || "",
-      role: user.role || "pelanggan",
+      address: user.address || "",
+      role: user.role || "pelanggan"
     });
-    setEditId(user.user_id);
-    setShowForm(true);
-    setSuccess("");
-    setError("");
+    setShowEditModal(true);
   };
 
-  const handleDelete = async (id) => {
-    if (!window.confirm("Yakin hapus user ini?")) return;
+  const handleDetail = (user) => {
+    setSelectedUser(user);
+    setShowDetailModal(true);
+  };
+
+  const handleDelete = async (userId) => {
+    if (window.confirm("Apakah Anda yakin ingin menghapus user ini?")) {
+      try {
+        await api.delete(`/users/${userId}`);
+        fetchUsers();
+      } catch (err) {
+        alert("Gagal menghapus user");
+      }
+    }
+  };
+
+  const handleToggleStatus = async (userId, currentStatus) => {
     try {
-      await api.delete(`/users/${id}`);
-      setSuccess("User berhasil dihapus");
+      await api.patch(`/users/${userId}/status`, {
+        isActive: !currentStatus
+      });
       fetchUsers();
-    } catch {
-      setError("Gagal menghapus user");
+    } catch (err) {
+      alert("Gagal mengubah status user");
     }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError("");
-    setSuccess("");
-
-    const formData = { ...form };
-    if (editId && !formData.password) {
-      delete formData.password;
-    }
-
     try {
-      if (editId) {
-        await api.put(`/users/${editId}`, formData);
-        setSuccess("User berhasil diupdate");
+      if (showEditModal) {
+        // Jika password kosong, hapus dari data yang dikirim
+        const updateData = { ...formData };
+        if (!updateData.password) {
+          delete updateData.password;
+        }
+        await api.put(`/users/${selectedUser.userId}`, updateData);
       } else {
         await api.post("/users", formData);
-        setSuccess("User berhasil ditambah");
       }
-      setShowForm(false);
+      setShowAddModal(false);
+      setShowEditModal(false);
       fetchUsers();
-    } catch {
-      setError("Gagal menyimpan user");
+    } catch (err) {
+      alert("Gagal menyimpan user");
     }
+  };
+
+  const getRoleBadge = (role) => {
+    const colors = {
+      admin: "bg-purple-100 text-purple-800",
+      owner: "bg-red-100 text-red-800",
+      kasir: "bg-green-100 text-green-800",
+      pelanggan: "bg-blue-100 text-blue-800"
+    };
+    return (
+      <span className={`px-2 py-1 rounded-full text-xs font-medium ${colors[role] || "bg-gray-100 text-gray-800"}`}>
+        {role}
+      </span>
+    );
+  };
+
+  const getStatusBadge = (isActive) => {
+    return (
+      <span className={`px-2 py-1 rounded-full text-xs font-medium ${isActive ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"}`}>
+        {isActive ? "Aktif" : "Nonaktif"}
+      </span>
+    );
+  };
+
+  const formatDate = (dateString) => {
+    if (!dateString) return "-";
+    return new Date(dateString).toLocaleDateString('id-ID', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    });
+  };
+
+  // Filter dan search users
+  const filteredUsers = users.filter(user => {
+    const matchesRole = filterRole === "all" || user.role === filterRole;
+    const matchesSearch = user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         user.email.toLowerCase().includes(searchTerm.toLowerCase());
+    return matchesRole && matchesSearch;
+  });
+
+  const getRoleDescription = (role) => {
+    const descriptions = {
+      admin: "Administrator - Akses penuh ke semua fitur sistem dan manajemen user",
+      kasir: "Kasir - Akses ke transaksi dan manajemen pesanan",
+      pelanggan: "Pelanggan - Akses ke pembelian dan riwayat belanja"
+    };
+    return descriptions[role] || "Role tidak dikenal";
   };
 
   return (
     <div className="container mx-auto px-4 py-12 flex-1">
       <div className="bg-white rounded-xl shadow p-8">
-        <h2 className="text-2xl font-bold mb-6">Manajemen User</h2>
-        {success && <div className="bg-green-100 text-green-700 p-3 rounded mb-4 text-center">{success}</div>}
-        {error && <div className="bg-red-100 text-red-700 p-3 rounded mb-4 text-center">{error}</div>}
-        <button onClick={handleAdd} className="mb-4 bg-blue-600 text-white px-6 py-2 rounded font-semibold hover:bg-blue-700 transition">Tambah User</button>
-        <table className="w-full mb-6">
-          <thead>
-            <tr>
-              <th className="text-left">Nama</th>
-              <th>Email</th>
-              <th>Alamat</th>
-              <th>No HP</th>
-              <th>Role</th>
-              <th>Aksi</th>
-            </tr>
-          </thead>
-          <tbody>
-            {users.map((user) => (
-              <tr key={user.user_id}>
-                <td>{user.name}</td>
-                <td>{user.email}</td>
-                <td>{user.address}</td>
-                <td>{user.phone}</td>
-                <td>{user.role}</td>
-                <td>
-                  <button onClick={() => handleEdit(user)} className="text-blue-600 hover:underline mr-2">Edit</button>
-                  <button onClick={() => handleDelete(user.user_id)} className="text-red-500 hover:underline">Hapus</button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-        {showForm && (
-          <form onSubmit={handleSubmit} className="space-y-4 bg-gray-50 p-6 rounded-xl border border-blue-100">
-            <div>
-              <label className="block font-semibold mb-1">Nama</label>
-              <input type="text" name="name" value={form.name} onChange={handleChange} className="w-full border rounded px-3 py-2" required />
+        <div className="flex justify-between items-center mb-6">
+          <h2 className="text-3xl font-bold text-gray-800">Manajemen User</h2>
+          <button 
+            onClick={handleAdd}
+            className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition flex items-center gap-2"
+          >
+            <FaPlus /> Tambah User
+          </button>
+        </div>
+
+        {/* Filter dan Search */}
+        <div className="mb-6 flex flex-col sm:flex-row gap-4">
+          <div className="flex-1">
+            <input
+              type="text"
+              placeholder="Cari user berdasarkan nama atau email..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+          </div>
+          <div className="flex gap-2">
+            <select
+              value={filterRole}
+              onChange={(e) => setFilterRole(e.target.value)}
+              className="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            >
+              <option value="all">Semua Role</option>
+              <option value="admin">Admin</option>
+              <option value="kasir">Kasir</option>
+              <option value="pelanggan">Pelanggan</option>
+            </select>
+          </div>
+        </div>
+
+        {loading ? (
+          <div className="text-center py-12">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
+            <p className="mt-4 text-gray-600">Memuat data user...</p>
+          </div>
+        ) : error ? (
+          <div className="text-center py-12">
+            <div className="text-red-600 font-semibold">{error}</div>
+          </div>
+        ) : (
+          <div className="overflow-x-auto">
+            <table className="w-full border-collapse border border-gray-200">
+              <thead>
+                <tr className="bg-gray-50">
+                  <th className="border border-gray-200 px-4 py-3 text-left text-sm font-semibold text-gray-700">No</th>
+                  <th className="border border-gray-200 px-4 py-3 text-left text-sm font-semibold text-gray-700">Nama</th>
+                  <th className="border border-gray-200 px-4 py-3 text-left text-sm font-semibold text-gray-700">Email</th>
+                  <th className="border border-gray-200 px-4 py-3 text-center text-sm font-semibold text-gray-700">Role</th>
+                  <th className="border border-gray-200 px-4 py-3 text-center text-sm font-semibold text-gray-700">Status</th>
+                  <th className="border border-gray-200 px-4 py-3 text-left text-sm font-semibold text-gray-700">Telepon</th>
+                  <th className="border border-gray-200 px-4 py-3 text-left text-sm font-semibold text-gray-700">Alamat</th>
+                  <th className="border border-gray-200 px-4 py-3 text-center text-sm font-semibold text-gray-700">Tanggal Daftar</th>
+                  <th className="border border-gray-200 px-4 py-3 text-center text-sm font-semibold text-gray-700">Aksi</th>
+                </tr>
+              </thead>
+              <tbody>
+                {filteredUsers.length === 0 ? (
+                  <tr>
+                    <td colSpan="9" className="border border-gray-200 px-4 py-8 text-center text-gray-500">
+                      {searchTerm || filterRole !== "all" ? "Tidak ada user yang sesuai dengan filter" : "Belum ada data user"}
+                    </td>
+                  </tr>
+                ) : (
+                  filteredUsers.map((user, index) => (
+                    <tr key={user.userId} className="hover:bg-gray-50">
+                      <td className="border border-gray-200 px-4 py-3 text-sm text-gray-900">{index + 1}</td>
+                      <td className="border border-gray-200 px-4 py-3 text-sm font-medium text-gray-900">{user.name}</td>
+                      <td className="border border-gray-200 px-4 py-3 text-sm text-gray-900">{user.email}</td>
+                      <td className="border border-gray-200 px-4 py-3 text-center">
+                        {getRoleBadge(user.role)}
+                      </td>
+                      <td className="border border-gray-200 px-4 py-3 text-center">
+                        {getStatusBadge(user.isActive)}
+                      </td>
+                      <td className="border border-gray-200 px-4 py-3 text-sm text-gray-900">
+                        {user.phone || "-"}
+                      </td>
+                      <td className="border border-gray-200 px-4 py-3 text-sm text-gray-900">
+                        <div className="max-w-xs truncate" title={user.address || "-"}>
+                          {user.address || "-"}
+                        </div>
+                      </td>
+                      <td className="border border-gray-200 px-4 py-3 text-sm text-gray-900 text-center">
+                        {formatDate(user.createdAt)}
+                      </td>
+                      <td className="border border-gray-200 px-4 py-3 text-center">
+                        <div className="flex space-x-2 justify-center">
+                          <button 
+                            onClick={() => handleDetail(user)}
+                            className="text-blue-600 hover:text-blue-800 text-sm font-medium px-2 py-1 rounded bg-blue-100 hover:bg-blue-200 transition"
+                            title="Detail"
+                          >
+                            <FaEye />
+                          </button>
+                          <button 
+                            onClick={() => handleEdit(user)}
+                            className="text-green-600 hover:text-green-800 text-sm font-medium px-2 py-1 rounded bg-green-100 hover:bg-green-200 transition"
+                            title="Edit"
+                          >
+                            <FaEdit />
+                          </button>
+                          <button 
+                            onClick={() => handleToggleStatus(user.userId, user.isActive)}
+                            className={`text-sm font-medium px-2 py-1 rounded transition ${
+                              user.isActive 
+                                ? "text-orange-600 hover:text-orange-800 bg-orange-100 hover:bg-orange-200" 
+                                : "text-green-600 hover:text-green-800 bg-green-100 hover:bg-green-200"
+                            }`}
+                            title={user.isActive ? "Nonaktifkan" : "Aktifkan"}
+                          >
+                            {user.isActive ? <FaToggleOff /> : <FaToggleOn />}
+                          </button>
+                          <button 
+                            onClick={() => handleDelete(user.userId)}
+                            className="text-red-600 hover:text-red-800 text-sm font-medium px-2 py-1 rounded bg-red-100 hover:bg-red-200 transition"
+                            title="Hapus"
+                          >
+                            <FaTrash />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
+          </div>
+        )}
+
+        {/* Add/Edit Modal */}
+        {(showAddModal || showEditModal) && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <div className="bg-white rounded-lg p-6 w-full max-w-md">
+              <h3 className="text-lg font-bold mb-4">
+                {showAddModal ? "Tambah User" : "Edit User"}
+              </h3>
+              
+              <form onSubmit={handleSubmit} className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Nama</label>
+                  <input
+                    type="text"
+                    value={formData.name}
+                    onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    required
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                  <input
+                    type="email"
+                    value={formData.email}
+                    onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    required
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    {showAddModal ? "Password" : "Password (kosongkan jika tidak diubah)"}
+                  </label>
+                  <input
+                    type="password"
+                    value={formData.password}
+                    onChange={(e) => setFormData(prev => ({ ...prev, password: e.target.value }))}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    required={showAddModal}
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Telepon</label>
+                  <input
+                    type="text"
+                    value={formData.phone}
+                    onChange={(e) => setFormData(prev => ({ ...prev, phone: e.target.value }))}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Alamat</label>
+                  <textarea
+                    value={formData.address}
+                    onChange={(e) => setFormData(prev => ({ ...prev, address: e.target.value }))}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    rows="3"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Role</label>
+                  <select
+                    value={formData.role}
+                    onChange={(e) => setFormData(prev => ({ ...prev, role: e.target.value }))}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  >
+                    <option value="pelanggan">Pelanggan</option>
+                    <option value="kasir">Kasir</option>
+                    <option value="admin">Admin</option>
+                  </select>
+                  <p className="text-xs text-gray-500 mt-1">{getRoleDescription(formData.role)}</p>
+                </div>
+
+                <div className="flex space-x-3 mt-6">
+                  <button
+                    type="submit"
+                    className="flex-1 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition"
+                  >
+                    {showAddModal ? "Tambah User" : "Update User"}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setShowAddModal(false);
+                      setShowEditModal(false);
+                    }}
+                    className="flex-1 bg-gray-500 text-white px-4 py-2 rounded-lg hover:bg-gray-600 transition"
+                  >
+                    Batal
+                  </button>
+                </div>
+              </form>
             </div>
-            <div>
-              <label className="block font-semibold mb-1">Email</label>
-              <input type="email" name="email" value={form.email} onChange={handleChange} className="w-full border rounded px-3 py-2" required />
+          </div>
+        )}
+
+        {/* Detail Modal */}
+        {showDetailModal && selectedUser && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <div className="bg-white rounded-lg p-6 w-full max-w-lg">
+              <h3 className="text-lg font-bold mb-4">Detail User</h3>
+              
+              <div className="space-y-3">
+                <div className="flex justify-between">
+                  <span className="font-medium">Nama:</span>
+                  <span>{selectedUser.name}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="font-medium">Email:</span>
+                  <span>{selectedUser.email}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="font-medium">Role:</span>
+                  <span>{getRoleBadge(selectedUser.role)}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="font-medium">Deskripsi Role:</span>
+                  <span className="text-right max-w-xs text-sm text-gray-600">{getRoleDescription(selectedUser.role)}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="font-medium">Status:</span>
+                  <span>{getStatusBadge(selectedUser.isActive)}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="font-medium">Telepon:</span>
+                  <span>{selectedUser.phone || "-"}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="font-medium">Alamat:</span>
+                  <span className="text-right max-w-xs">{selectedUser.address || "-"}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="font-medium">Tanggal Daftar:</span>
+                  <span>{formatDate(selectedUser.createdAt)}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="font-medium">Terakhir Update:</span>
+                  <span>{formatDate(selectedUser.updatedAt)}</span>
+                </div>
+              </div>
+
+              <div className="mt-6 flex justify-end">
+                <button
+                  onClick={() => setShowDetailModal(false)}
+                  className="bg-gray-500 text-white px-4 py-2 rounded-lg hover:bg-gray-600 transition"
+                >
+                  Tutup
+                </button>
+              </div>
             </div>
-            <div>
-              <label className="block font-semibold mb-1">Password</label>
-              <input type="password" name="password" value={form.password} onChange={handleChange} className="w-full border rounded px-3 py-2" required={!editId} />
-              {editId && <small className="text-gray-500">Kosongkan jika tidak ingin mengubah password.</small>}
-            </div>
-            <div>
-              <label className="block font-semibold mb-1">Alamat</label>
-              <input type="text" name="address" value={form.address} onChange={handleChange} className="w-full border rounded px-3 py-2" />
-            </div>
-            <div>
-              <label className="block font-semibold mb-1">No HP</label>
-              <input type="text" name="phone" value={form.phone} onChange={handleChange} className="w-full border rounded px-3 py-2" />
-            </div>
-            <div>
-              <label className="block font-semibold mb-1">Role</label>
-              <select name="role" value={form.role} onChange={handleChange} className="w-full border rounded px-3 py-2" required>
-                <option value="pelanggan">Pelanggan</option>
-                <option value="admin">Admin</option>
-                <option value="kasir">Kasir</option>
-                <option value="pemilik">Pemilik</option>
-              </select>
-            </div>
-            <div className="flex gap-2 mt-4">
-              <button type="submit" className="bg-blue-600 text-white px-6 py-2 rounded font-semibold hover:bg-blue-700 transition">Simpan</button>
-              <button type="button" onClick={() => setShowForm(false)} className="bg-gray-200 text-gray-700 px-6 py-2 rounded font-semibold hover:bg-gray-300 transition">Batal</button>
-            </div>
-          </form>
+          </div>
         )}
       </div>
     </div>

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { FaPrint, FaSearch, FaFilePdf } from 'react-icons/fa';
+import { FaPrint, FaSearch, FaFileExcel } from 'react-icons/fa';
 import api from '../../utils/api';
 
 const RiwayatTransaksiPemilik = () => {
@@ -9,13 +9,17 @@ const RiwayatTransaksiPemilik = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
+  const [filteredTransactions, setFilteredTransactions] = useState([]);
 
   useEffect(() => {
     const fetchTransactions = async () => {
       try {
         setLoading(true);
         const response = await api.get('/transactions');
-        setTransactions(response.data);
+        
+        // Filter hanya transaksi dengan payment_status SUCCESS
+        const successTransactions = response.data.filter(t => t.payment_status === 'SUCCESS');
+        setTransactions(successTransactions);
         setError(null);
       } catch (err) {
         console.error('Error fetching transactions:', err);
@@ -30,7 +34,8 @@ const RiwayatTransaksiPemilik = () => {
   }, []);
 
   const formatCurrency = (amount) => {
-    return `Rp ${amount?.toLocaleString('id-ID') || '0'}`;
+    if (!amount || amount === 0) return 'Rp 0';
+    return `Rp ${Number(amount).toLocaleString('id-ID')}`;
   };
 
   const formatDate = (dateString) => {
@@ -45,24 +50,75 @@ const RiwayatTransaksiPemilik = () => {
   };
 
   // Filter transactions based on search and date range
-  const filteredTransactions = transactions.filter(transaction => {
-    const matchesSearch = transaction.transaction_code?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         transaction.cashier_name?.toLowerCase().includes(searchTerm.toLowerCase());
-    
-    let matchesDate = true;
-    if (startDate && endDate) {
-      const transactionDate = new Date(transaction.transaction_date);
-      const start = new Date(startDate);
-      const end = new Date(endDate);
-      matchesDate = transactionDate >= start && transactionDate <= end;
-    }
-    
-    return matchesSearch && matchesDate;
-  });
+  const applyFilters = () => {
+    const filtered = transactions.filter(transaction => {
+      const matchesSearch = transaction.transaction_code?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                           transaction.cashier_name?.toLowerCase().includes(searchTerm.toLowerCase());
+      
+      let matchesDate = true;
+      if (startDate && endDate) {
+        const transactionDate = new Date(transaction.transaction_date);
+        const start = new Date(startDate);
+        const end = new Date(endDate);
+        matchesDate = transactionDate >= start && transactionDate <= end;
+      }
+      
+      return matchesSearch && matchesDate;
+    });
+    setFilteredTransactions(filtered);
+  };
+
+  useEffect(() => {
+    applyFilters();
+  }, [transactions, searchTerm, startDate, endDate]);
 
   const totalRevenue = filteredTransactions.reduce((sum, transaction) => {
-    return sum + (transaction.final_amount || 0);
+    return sum + Number(transaction.final_amount || 0);
   }, 0);
+
+  const exportToExcel = () => {
+    // Create CSV content with proper formatting
+    const headers = ['ID Transaksi', 'Tanggal', 'Waktu', 'Kasir', 'Status', 'Total (Rp)'];
+    const csvContent = [
+      headers.join(','),
+      ...filteredTransactions.map(transaction => {
+        const date = new Date(transaction.transaction_date);
+        const formattedDate = date.toLocaleDateString('id-ID', {
+          year: 'numeric',
+          month: '2-digit',
+          day: '2-digit'
+        });
+        const formattedTime = date.toLocaleTimeString('id-ID', {
+          hour: '2-digit',
+          minute: '2-digit'
+        });
+        
+        return [
+          `"${transaction.transaction_code || ''}"`,
+          `"${formattedDate}"`,
+          `"${formattedTime}"`,
+          `"${transaction.cashier_name || 'N/A'}"`,
+          `"${transaction.payment_status || 'Pending'}"`,
+          `"${(transaction.final_amount || 0).toLocaleString('id-ID')}"`
+        ].join(',');
+      })
+    ].join('\n');
+
+    // Add BOM for proper UTF-8 encoding
+    const BOM = '\uFEFF';
+    const csvWithBOM = BOM + csvContent;
+
+    // Create and download file
+    const blob = new Blob([csvWithBOM], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    const url = URL.createObjectURL(blob);
+    link.setAttribute('href', url);
+    link.setAttribute('download', `riwayat-transaksi-${new Date().toISOString().split('T')[0]}.csv`);
+    link.style.visibility = 'hidden';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
 
   if (loading) {
     return (
@@ -109,16 +165,22 @@ const RiwayatTransaksiPemilik = () => {
               className="w-full p-3 border border-gray-300 rounded-lg" 
             />
           </div>
-          <button className="md:col-span-1 bg-blue-600 text-white px-4 py-2 rounded-lg font-semibold hover:bg-blue-700 transition-all flex items-center justify-center gap-2">
+          <button 
+            onClick={applyFilters}
+            className="md:col-span-1 bg-blue-600 text-white px-4 py-2 rounded-lg font-semibold hover:bg-blue-700 transition-all flex items-center justify-center gap-2"
+          >
             <FaSearch />
             Filter
           </button>
         </div>
 
         <div className="flex justify-end mb-4">
-             <button className="bg-green-600 text-white px-4 py-2 rounded-lg font-semibold hover:bg-green-700 transition-all flex items-center gap-2">
-                <FaFilePdf />
-                Export ke PDF
+             <button 
+               onClick={exportToExcel}
+               className="bg-green-600 text-white px-4 py-2 rounded-lg font-semibold hover:bg-green-700 transition-all flex items-center gap-2"
+             >
+                <FaFileExcel />
+                Export ke Excel
             </button>
         </div>
 

@@ -1,0 +1,15 @@
+# Database Configuration
+DATABASE_URL="mysql://root:password@localhost:3306/fashion_park"
+
+# JWT Secret
+JWT_SECRET="fashion-park-super-secret-jwt-key-2024"
+
+# Brevo (Sendinblue) Configuration
+BREVO_API_KEY="pgzjx41FRbPUfYTM"
+
+# Frontend URL
+FRONTEND_URL="http://localhost:3000"
+
+# Server Configuration
+PORT=5000
+NODE_ENV="development"

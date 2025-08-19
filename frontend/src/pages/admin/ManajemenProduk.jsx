@@ -1,10 +1,8 @@
-import React, { useEffect, useState, useRef, useCallback } from "react";
-import api from "../../utils/api";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import Barcode from "react-barcode";
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import jsPDF from "jspdf";
-import html2canvas from "html2canvas";
+import api from "../../utils/api";
 
 const SIZE_OPTIONS = {
   'Celana': ["29", "30", "31", "32", "33", "34", "35", "36"],
@@ -26,102 +24,19 @@ const PrintableBarcode = React.forwardRef(({ product }, ref) => {
   if (!product) return null;
   return (
     <div ref={ref} className="printable-area">
-      <style>
-        {`
-          @media print {
-            body * {
-              visibility: hidden;
-            }
-            .printable-area, .printable-area * {
-              visibility: visible;
-            }
-            .printable-area {
-              position: absolute;
-              left: 0;
-              top: 0;
-              width: 100%;
-              height: 100%;
-              display: flex;
-              justify-content: center;
-              align-items: center;
-            }
-            .barcode-container {
-              text-align: center;
-              border: 1px solid #ccc;
-              padding: 20px;
-            }
-          }
-        `}
-      </style>
+      <style>{`
+        @media print {
+          body * { visibility: hidden; }
+          .printable-area, .printable-area * { visibility: visible; }
+          .printable-area { position: absolute; left: 0; top: 0; width: 100%; height: 100%; display: flex; justify-content: center; align-items: center; }
+          .barcode-container { text-align: center; border: 1px solid #ccc; padding: 20px; }
+        }
+      `}</style>
       <div className="barcode-container">
         <h4>{product.product_name}</h4>
         <p>{formatRupiah(product.price)}</p>
-        <Barcode value={product.product_id.toString()} />
+        <Barcode value={product.barcode ? product.barcode : product.product_id.toString()} />
       </div>
-    </div>
-  );
-});
-
-// Komponen reusable untuk grid barcode multi
-const BarcodeGrid = React.forwardRef(({ products }, ref) => {
-  // Tambahkan placeholder agar kelipatan 5
-  const items = [...products];
-  const remainder = items.length % 5;
-  if (remainder !== 0) {
-    for (let i = 0; i < 5 - remainder; i++) {
-      items.push({ product_id: `placeholder-${i}`, placeholder: true });
-    }
-  }
-  return (
-    <div
-      ref={ref}
-      style={{
-        display: 'grid',
-        gridTemplateColumns: 'repeat(5, 1fr)',
-        gap: 0,
-        background: '#fff',
-        padding: 0,
-        margin: '24px 0',
-        width: 1240,
-        minHeight: 120,
-        border: '2px solid #0074D9',
-      }}
-    >
-      {items.map((product, idx) => (
-        product.placeholder ? (
-          <div key={product.product_id} style={{ width: '100%', height: 120, background: '#f8f8f8', margin: 0, padding: 0 }}></div>
-        ) : (
-          <div
-            key={product.product_id}
-            style={{
-              width: '100%',
-              height: 120,
-              textAlign: 'center',
-              margin: 0,
-              padding: 0,
-              background: '#fff',
-              boxSizing: 'border-box',
-              display: 'flex',
-              flexDirection: 'column',
-              justifyContent: 'center',
-              alignItems: 'center',
-              border: '1px solid #eee',
-            }}
-          >
-            <Barcode
-              value={product.product_id.toString()}
-              width={1.5}
-              height={60}
-              fontSize={12}
-              margin={0}
-              displayValue={false}
-            />
-            <div style={{ fontSize: 10, marginTop: 0, letterSpacing: 1 }}>
-              BC{String(product.product_id).padStart(3, '0')}
-            </div>
-          </div>
-        )
-      ))}
     </div>
   );
 });
@@ -131,13 +46,12 @@ const ManajemenProduk = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [showForm, setShowForm] = useState(false);
-  const [form, setForm] = useState({ product_name: "", price: "", category_id: "", description: "" });
+  const [form, setForm] = useState({ product_name: "", price: "", category_id: "", description: "", weight: "" });
   const [editId, setEditId] = useState(null);
   const [success, setSuccess] = useState("");
   const [categories, setCategories] = useState([]);
   const [productToPrint, setProductToPrint] = useState(null);
-  const printRef = useRef();
-  const fileInputRef = useRef();
+  const [showPrintModal, setShowPrintModal] = useState(false);
   const [imagePreviews, setImagePreviews] = useState([]);
   const [formErrors, setFormErrors] = useState({});
   const [loadingSubmit, setLoadingSubmit] = useState(false);
@@ -145,40 +59,71 @@ const ManajemenProduk = () => {
   const [variants, setVariants] = useState([]);
   const [uploadedImages, setUploadedImages] = useState([]);
   const [selectedProduk, setSelectedProduk] = useState([]);
-  const [showMultiPrint, setShowMultiPrint] = useState(false);
-  const multiPrintRef = useRef();
   const barcodePdfRef = useRef();
-  const barcodeMultiPdfRef = useRef();
   const [pendingDownload, setPendingDownload] = useState(null); // { type: 'single'|'multi', product: obj|null }
+  const fileInputRef = useRef();
+  const [selectedVariantIds, setSelectedVariantIds] = useState([]);
 
-  // Perbaiki handlePrint agar hanya untuk print
-  const handlePrint = (product) => {
-    setProductToPrint(product);
-    setTimeout(() => {
-      if (printRef.current) {
-        const printContents = printRef.current.innerHTML;
-        const originalContents = document.body.innerHTML;
-        document.body.innerHTML = printContents;
-        window.print();
-        document.body.innerHTML = originalContents;
-        setProductToPrint(null);
-        setTimeout(() => window.location.reload(), 100);
-      }
-    }, 100);
+  // Handler select varian
+  const handleSelectVariant = (variant_id) => {
+    setSelectedVariantIds((prev) =>
+      prev.includes(variant_id) ? prev.filter((vid) => vid !== variant_id) : [...prev, variant_id]
+    );
   };
-  
-  useEffect(() => {
-    if (productToPrint) {
-      const printContents = printRef.current.innerHTML;
-      const originalContents = document.body.innerHTML;
-      document.body.innerHTML = printContents;
-      window.print();
-      document.body.innerHTML = originalContents;
-      setProductToPrint(null);
-      // a small delay to ensure the content is restored before continuing
-      setTimeout(() => window.location.reload(), 100);
+  const handleSelectAllVariants = () => {
+    const allVariantIds = produk.flatMap(p => (p.variants || []).map(v => v.variant_id));
+    if (selectedVariantIds.length === allVariantIds.length) {
+      setSelectedVariantIds([]);
+    } else {
+      setSelectedVariantIds(allVariantIds);
     }
-  }, [productToPrint]);
+  };
+
+  // Handler print massal (desktop - 1x3 cm)
+  // Handler print barcode horizontal (produk - 0,7x0,3 cm)
+  const handlePrintBarcodeHorizontal = async () => {
+    if (selectedVariantIds.length === 0) return toast.error('Pilih varian/produk yang ingin dicetak!');
+    // Kumpulkan variant_ids dan product_ids
+    const variant_ids = [];
+    const product_ids = [];
+    for (const id of selectedVariantIds) {
+      // Cek apakah id adalah variant_id dari produk manapun
+      let found = false;
+      for (const p of produk) {
+        if (p.variants && p.variants.some(v => v.variant_id === id)) {
+          variant_ids.push(id);
+          found = true;
+          break;
+        }
+      }
+      if (!found) {
+        // Jika tidak ditemukan di varian, berarti ini product_id produk tanpa varian
+        product_ids.push(id);
+      }
+    }
+    try {
+      const res = await api.post('/products/print-barcodes-horizontal', { variant_ids, product_ids }, { responseType: 'blob' });
+      const url = window.URL.createObjectURL(new Blob([res.data], { type: 'application/pdf' }));
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', 'barcodes-horizontal.pdf');
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+    } catch (err) {
+      toast.error('Gagal print barcode horizontal');
+    }
+  };
+
+  useEffect(() => {
+    if (showPrintModal && productToPrint) {
+      setTimeout(() => {
+        window.print();
+        setShowPrintModal(false);
+        setProductToPrint(null);
+      }, 300);
+    }
+  }, [showPrintModal, productToPrint]);
 
   const fetchProduk = async () => {
     setLoading(true);
@@ -250,6 +195,8 @@ const ManajemenProduk = () => {
     setSuccess("");
     setError("");
     setVariants([]);
+    setImagePreviews([]);
+    setUploadedImages([]);
   };
 
   const handleEdit = (prod) => {
@@ -258,6 +205,7 @@ const ManajemenProduk = () => {
       price: prod.price,
       category_id: prod.category_id,
       description: prod.description || "",
+      weight: prod.weight || "",
     });
     setEditId(prod.product_id);
     setShowForm(true);
@@ -302,7 +250,15 @@ const ManajemenProduk = () => {
     if (!form.price || Number(form.price) <= 0) errors.price = 'Harga harus lebih dari 0';
     if (!form.category_id) errors.category_id = 'Kategori wajib dipilih';
     const catName = categories.find(c => c.category_id == form.category_id)?.category_name;
-    if (!ACCESSORY_CATEGORIES.includes(catName) && variants.length === 0) errors.variants = 'Minimal 1 varian wajib diisi';
+    if (ACCESSORY_CATEGORIES.includes(catName)) {
+      // Untuk aksesoris, pastikan ada input stok
+      if (!variants[0]?.stock_quantity || Number(variants[0].stock_quantity) < 0) {
+        errors.variants = 'Stok aksesoris wajib diisi';
+      }
+    } else {
+      // Untuk produk dengan ukuran, pastikan ada varian
+      if (variants.length === 0) errors.variants = 'Minimal 1 varian wajib diisi';
+    }
     if (!editId && imagePreviews.length === 0) errors.image = 'Minimal 1 gambar produk wajib diupload';
     return errors;
   };
@@ -324,6 +280,7 @@ const ManajemenProduk = () => {
       const formToSend = {
         ...form,
         price: Number((form.price + '').replace(/[^\d.]/g, '').replace(',', '.')),
+        weight: Number(form.weight) || 0,
         stock_quantity: 0,
         barcode: '',
         is_active: true
@@ -341,7 +298,16 @@ const ManajemenProduk = () => {
       }
       // Simpan varian
       const catName = categories.find(c => c.category_id == form.category_id)?.category_name;
-      if (!ACCESSORY_CATEGORIES.includes(catName)) {
+      if (ACCESSORY_CATEGORIES.includes(catName)) {
+        // Untuk aksesoris, buat satu varian tanpa ukuran dengan stok dari input
+        const accessoryStock = variants[0]?.stock_quantity || 0;
+        await api.post(`/products/${productId}/variants`, { 
+          product_id: productId, 
+          size: '', 
+          stock_quantity: Number(accessoryStock) 
+        });
+      } else {
+        // Untuk produk dengan ukuran, simpan semua varian
         for (const v of variants) {
           if (!v.variant_id) {
             await api.post(`/products/${productId}/variants`, { product_id: productId, size: v.size, stock_quantity: Number(v.stock_quantity) });
@@ -371,7 +337,7 @@ const ManajemenProduk = () => {
       setShowForm(false);
       await fetchProduk();
       setImagePreviews([]);
-      setForm({ product_name: "", price: "", category_id: "", description: "" });
+      setForm({ product_name: "", price: "", category_id: "", description: "", weight: "" });
       setVariants([]);
     } catch {
       setError("Gagal menyimpan produk");
@@ -394,74 +360,18 @@ const ManajemenProduk = () => {
     }
   };
 
-  const handleMultiPrint = () => {
-    setShowMultiPrint(true);
+  const handlePrint = (item) => {
+    // item bisa varian (punya barcode, size) atau produk (punya barcode, tidak ada size)
+    setProductToPrint(item);
+    setShowPrintModal(true);
   };
 
-  useEffect(() => {
-    if (showMultiPrint) {
-      setTimeout(() => {
-        const printContents = multiPrintRef.current.innerHTML;
-        const originalContents = document.body.innerHTML;
-        document.body.innerHTML = printContents;
-        window.print();
-        document.body.innerHTML = originalContents;
-        setShowMultiPrint(false);
-        setTimeout(() => window.location.reload(), 100);
-      }, 100);
-    }
-  }, [showMultiPrint]);
-
-  // Download PDF single barcode
-  const downloadBarcodePDF = (product) => {
-    setProductToPrint(product);
-    setPendingDownload({ type: 'single', product });
-  };
-
-  // Download PDF multi barcode
-  const downloadMultiBarcodePDF = () => {
-    setShowMultiPrint(true); // tetap set true agar proses berjalan
-    setPendingDownload({ type: 'multi', product: null });
-  };
-
-  // Trigger download PDF setelah render barcode selesai
-  useEffect(() => {
-    if (pendingDownload?.type === 'single' && productToPrint && barcodePdfRef.current) {
-      setTimeout(async () => {
-        try {
-          const canvas = await html2canvas(barcodePdfRef.current);
-          const imgData = canvas.toDataURL('image/png');
-          const pdf = new jsPDF({ orientation: 'portrait', unit: 'pt', format: [200, 120] });
-          pdf.addImage(imgData, 'PNG', 10, 10, 180, 100);
-          pdf.save(`barcode_${productToPrint.product_id}.pdf`);
-        } catch (err) {
-          alert('Gagal generate PDF barcode. Pastikan browser mendukung.');
-        }
-        setProductToPrint(null);
-        setPendingDownload(null);
-      }, 200);
-    } else if (pendingDownload?.type === 'multi') {
-      if (!barcodeMultiPdfRef.current) {
-        setShowMultiPrint(false);
-        setPendingDownload(null);
-        return;
-      }
-      setTimeout(async () => {
-        try {
-          // Ukuran A4: 1240x1754px (300dpi)
-          const canvas = await html2canvas(barcodeMultiPdfRef.current, { backgroundColor: '#fff', scale: 3, width: 1240, height: 1754 });
-          const imgData = canvas.toDataURL('image/png');
-          const pdf = new jsPDF({ orientation: 'portrait', unit: 'pt', format: 'a4' });
-          pdf.addImage(imgData, 'PNG', 0, 0, 595, 842);
-          pdf.save(`barcode_multi.pdf`);
-        } catch (err) {
-          alert('Gagal generate PDF barcode multi. Pastikan browser mendukung.');
-        }
-        setShowMultiPrint(false);
-        setPendingDownload(null);
-      }, 200);
-    }
-  }, [pendingDownload, productToPrint, showMultiPrint]);
+  // Hitung semua ID yang bisa dipilih (variant_id untuk varian, product_id untuk produk tanpa varian)
+  const allSelectableIds = produk.flatMap(p =>
+    (p.variants && p.variants.length > 0)
+      ? p.variants.map(v => v.variant_id)
+      : [p.product_id]
+  );
 
   return (
     <div className="container mx-auto px-4 py-12 flex-1">
@@ -469,70 +379,70 @@ const ManajemenProduk = () => {
         <h2 className="text-2xl font-bold mb-6">Manajemen Produk</h2>
         {success && <div className="bg-green-100 text-green-700 p-3 rounded mb-4 text-center">{success}</div>}
         {error && <div className="bg-red-100 text-red-700 p-3 rounded mb-4 text-center">{error}</div>}
-        <button onClick={handleAdd} className="mb-4 bg-blue-600 text-white px-6 py-2 rounded font-semibold hover:bg-blue-700 transition">Tambah Produk</button>
-        <button
-          onClick={handleMultiPrint}
-          disabled={selectedProduk.length === 0}
-          className={`mb-4 ml-4 px-6 py-2 rounded font-semibold transition ${selectedProduk.length === 0 ? 'bg-gray-300 text-gray-500 cursor-not-allowed' : 'bg-green-600 text-white hover:bg-green-700'}`}
-        >
-          Print Barcode Terpilih
-        </button>
-        <button
-          onClick={downloadMultiBarcodePDF}
-          disabled={selectedProduk.length === 0}
-          className={`mb-4 ml-4 px-6 py-2 rounded font-semibold transition ${selectedProduk.length === 0 ? 'bg-gray-300 text-gray-500 cursor-not-allowed' : 'bg-purple-600 text-white hover:bg-purple-700'}`}
-        >
-          Download PDF Barcode Terpilih
-        </button>
-        {/* Tampilkan grid barcode multi di halaman dan gunakan ref untuk PDF */}
-        {selectedProduk.length > 0 && (
-          <BarcodeGrid
-            ref={barcodeMultiPdfRef}
-            products={produk.filter(p => selectedProduk.includes(p.product_id))}
-          />
-        )}
-        <table className="w-full mb-6">
+        
+        {/* Tombol bersebelahan */}
+        <div className="flex gap-4 mb-4">
+          <button onClick={handleAdd} className="bg-blue-600 text-white px-6 py-2 rounded font-semibold hover:bg-blue-700 transition">
+            Tambah Produk
+          </button>
+          <button onClick={handlePrintBarcodeHorizontal} className="bg-green-600 text-white px-6 py-2 rounded font-semibold hover:bg-green-700 transition">
+            Print Barcode
+          </button>
+        </div>
+        
+        <table className="w-full mb-6 border border-gray-300 rounded-lg overflow-hidden">
           <thead>
-            <tr>
-              <th><input type="checkbox" checked={selectedProduk.length === produk.length && produk.length > 0} onChange={handleSelectAll} /></th>
-              <th className="text-left">Nama Produk</th>
-              <th>Kategori</th>
-              <th>Harga</th>
-              <th>Deskripsi</th>
-              <th>Aksi</th>
+            <tr className="bg-white font-bold">
+              <th className="border-b border-gray-300 px-3 py-2 text-left"><input type="checkbox" checked={selectedVariantIds.length === allSelectableIds.length && allSelectableIds.length > 0} onChange={() => {
+                    if (selectedVariantIds.length === allSelectableIds.length) {
+                      setSelectedVariantIds([]);
+                    } else {
+                      setSelectedVariantIds(allSelectableIds);
+                    }
+                  }} /></th>
+              <th className="border-b border-gray-300 px-3 py-2 text-left">Nama Produk</th>
+              <th className="border-b border-gray-300 px-3 py-2 text-left">Ukuran</th>
+              <th className="border-b border-gray-300 px-3 py-2 text-left">Barcode</th>
+              <th className="border-b border-gray-300 px-3 py-2 text-left">Aksi</th>
             </tr>
           </thead>
           <tbody>
-            {produk.map((prod) => (
-              <tr key={prod.product_id}>
-                <td><input type="checkbox" checked={selectedProduk.includes(prod.product_id)} onChange={() => handleSelectProduk(prod.product_id)} /></td>
-                <td>{prod.product_name}</td>
-                <td>{categories.find((c) => c.category_id === prod.category_id)?.category_name || '-'}</td>
-                <td>{formatRupiah(prod.price)}</td>
-                <td>{prod.description}</td>
-                <td className="flex gap-2 items-center">
-                  <button onClick={() => handleEdit(prod)} className="text-blue-600 hover:underline">Edit</button>
-                  <button onClick={() => handleDelete(prod.product_id)} className="text-red-500 hover:underline">Hapus</button>
-                  <button onClick={() => handlePrint(prod)} className="text-green-600 hover:underline">Print Barcode</button>
-                  <button onClick={() => downloadBarcodePDF(prod)} className="text-purple-600 hover:underline">Download PDF</button>
-                </td>
-              </tr>
-            ))}
+            {produk.map((prod) => {
+              // Jika produk punya varian, render satu baris per varian
+              if (prod.variants && prod.variants.length > 0) {
+                return prod.variants.map((variant, idx) => (
+                  <tr key={variant.variant_id} className="hover:bg-gray-50">
+                    <td className="border-b border-gray-200 px-3 py-2"><input type="checkbox" checked={selectedVariantIds.includes(variant.variant_id)} onChange={() => handleSelectVariant(variant.variant_id)} /></td>
+                    <td className="border-b border-gray-200 px-3 py-2">{prod.product_name}</td>
+                    <td className="border-b border-gray-200 px-3 py-2">{variant.size || '-'}</td>
+                    <td className="border-b border-gray-200 px-3 py-2">{variant.barcode}</td>
+                    <td className="border-b border-gray-200 px-3 py-2 flex gap-2 items-center">
+                      <button onClick={() => handleEdit(prod)} className="text-blue-600 hover:underline">Edit</button>
+                      <button onClick={() => handleDelete(prod.product_id)} className="text-red-500 hover:underline">Hapus</button>
+                      <button onClick={() => handlePrint({ ...variant, product_name: prod.product_name })} className="text-green-600 hover:underline">Print Barcode</button>
+                    </td>
+                  </tr>
+                ));
+              } else {
+                // Produk tanpa varian (misal: aksesoris)
+                return (
+                  <tr key={prod.product_id} className="hover:bg-gray-50">
+                    <td className="border-b border-gray-200 px-3 py-2"><input type="checkbox" checked={selectedVariantIds.includes(prod.product_id)} onChange={() => handleSelectVariant(prod.product_id)} /></td>
+                    <td className="border-b border-gray-200 px-3 py-2">{prod.product_name}</td>
+                    <td className="border-b border-gray-200 px-3 py-2">-</td>
+                    <td className="border-b border-gray-200 px-3 py-2">{prod.barcode || '-'}</td>
+                    <td className="border-b border-gray-200 px-3 py-2 flex gap-2 items-center">
+                      <button onClick={() => handleEdit(prod)} className="text-blue-600 hover:underline">Edit</button>
+                      <button onClick={() => handleDelete(prod.product_id)} className="text-red-500 hover:underline">Hapus</button>
+                      <button onClick={() => handlePrint(prod)} className="text-green-600 hover:underline">Print Barcode</button>
+                    </td>
+                  </tr>
+                );
+              }
+            })}
           </tbody>
         </table>
         {/* Render barcode single dan multi ke elemen hidden */}
-        <div style={{ display: 'none' }}>
-          <PrintableBarcode ref={printRef} product={productToPrint} />
-          {productToPrint && (
-            <div ref={barcodePdfRef}>
-              <div style={{ background: '#fff', padding: 20, textAlign: 'center' }}>
-                <h4 style={{ margin: 0 }}>{productToPrint.product_name}</h4>
-                <p style={{ margin: 0 }}>{formatRupiah(productToPrint.price)}</p>
-                <Barcode value={productToPrint.product_id.toString()} />
-              </div>
-            </div>
-          )}
-        </div>
         {showForm && (
           <form onSubmit={handleSubmit} className="space-y-4 bg-gray-50 p-6 rounded-xl border border-blue-100">
             <div>
@@ -552,12 +462,50 @@ const ManajemenProduk = () => {
             </div>
             <div>
               <label className="block font-semibold mb-1">Harga</label>
-              <input type="number" name="price" value={form.price} onChange={handleChange} className="w-full border rounded px-3 py-2" required />
+              <input 
+                type="text" 
+                name="price" 
+                value={form.price ? Number(form.price).toLocaleString('id-ID') : ''} 
+                onChange={(e) => {
+                  const value = e.target.value.replace(/[^\d]/g, '');
+                  handleChange({
+                    target: {
+                      name: 'price',
+                      value: value
+                    }
+                  });
+                }}
+                onBlur={(e) => {
+                  const value = e.target.value.replace(/[^\d]/g, '');
+                  if (value) {
+                    e.target.value = Number(value).toLocaleString('id-ID');
+                  }
+                }}
+                className="w-full border rounded px-3 py-2" 
+                required 
+                placeholder="Contoh: 1.230.000"
+              />
               {formErrors.price && <div className="text-red-500 text-sm mt-1">{formErrors.price}</div>}
             </div>
             <div>
               <label className="block font-semibold mb-1">Deskripsi</label>
               <textarea name="description" value={form.description} onChange={handleChange} className="w-full border rounded px-3 py-2" />
+            </div>
+            <div>
+              <label className="block font-semibold mb-1">Berat (gram)</label>
+              <input 
+                type="number" 
+                name="weight" 
+                value={form.weight} 
+                onChange={handleChange} 
+                className="w-full border rounded px-3 py-2" 
+                placeholder="Contoh: 500"
+                min="0"
+                step="0.01"
+              />
+              <div className="text-sm text-gray-600 mt-1">
+                Berat produk dalam gram. Digunakan untuk perhitungan ongkir.
+              </div>
             </div>
             <div>
               <label className="block font-semibold mb-1">Gambar Produk</label>
@@ -567,7 +515,10 @@ const ManajemenProduk = () => {
                 {/* Gambar dari backend */}
                 {uploadedImages.map((img, idx) => (
                   <div key={img.image_id} className="relative">
-                    <img src={`http://localhost:5000${img.url}`} alt={`Uploaded ${idx+1}`} className="h-24 rounded border-2 border-gray-200" />
+                    <img src={`${(((typeof window !== 'undefined' && window.__API_URL__) || 
+                                    process.env.REACT_APP_API_URL || 
+                                    'https://1837c60c25d5.ngrok-free.app' ||
+                                    'http://localhost:5000')).replace(/\/?api\/?$/i,'')}${img.url}?ngrok-skip-browser-warning=true`} alt={`Uploaded ${idx+1}`} className="h-24 rounded border-2 border-gray-200" />
                     <button
                       type="button"
                       onClick={() => handleDeleteUploadedImage(img)}
@@ -593,21 +544,48 @@ const ManajemenProduk = () => {
               </div>
               {formErrors.image && <div className="text-red-500 text-sm mt-1">{formErrors.image}</div>}
             </div>
-            <div>
-              <label className="block font-semibold mb-1">Varian Ukuran & Stok</label>
-              {variants.map((v, idx) => (
-                <div key={idx} className="flex gap-2 items-center mb-2">
-                  <select value={v.size} onChange={e => handleVariantChange(idx, 'size', e.target.value)} className="border rounded px-2 py-1">
-                    <option value="">Pilih Ukuran</option>
-                    {SIZE_OPTIONS[categories.find(c => c.category_id == form.category_id)?.category_name]?.map(opt => <option key={opt} value={opt}>{opt}</option>)}
-                  </select>
-                  <input type="number" min="0" value={v.stock_quantity} onChange={e => handleVariantChange(idx, 'stock_quantity', e.target.value)} className="border rounded px-2 py-1 w-24" placeholder="Stok" />
-                  <button type="button" onClick={() => handleRemoveVariant(idx)} className="text-red-500">Hapus</button>
-                </div>
-              ))}
-              <button type="button" onClick={handleAddVariant} className="bg-blue-200 text-blue-800 px-3 py-1 rounded">Tambah Varian</button>
-              {formErrors.variants && <div className="text-red-500 text-sm mt-1">{formErrors.variants}</div>}
-            </div>
+                         <div>
+               <label className="block font-semibold mb-1">Varian Ukuran & Stok</label>
+               {/* Tentukan tipe kategori */}
+               {(() => {
+                 const catName = categories.find(c => c.category_id == form.category_id)?.category_name;
+                 if (ACCESSORY_CATEGORIES.includes(catName)) {
+                   // Untuk aksesoris, hanya input stok total (tanpa ukuran)
+                   return (
+                     <div className="flex gap-2 items-center mb-2">
+                       <label className="text-sm font-medium">Stok Aksesoris:</label>
+                       <input 
+                         type="number" 
+                         min="0" 
+                         value={variants[0]?.stock_quantity || ''} 
+                         onChange={e => setVariants([{ stock_quantity: e.target.value }])} 
+                         className="border rounded px-2 py-1 w-24" 
+                         placeholder="Stok" 
+                       />
+                       <span className="text-xs text-gray-500">(Akan dibuat barcode otomatis)</span>
+                     </div>
+                   );
+                 }
+                 const sizeOptions = SIZE_OPTIONS[catName];
+                 if (!sizeOptions) {
+                   return <div className="text-red-500 text-sm mb-2">Kategori tidak dikenali, silakan cek nama kategori!</div>;
+                 }
+                 return <>
+                   {variants.map((v, idx) => (
+                     <div key={idx} className="flex gap-2 items-center mb-2">
+                       <select value={v.size} onChange={e => handleVariantChange(idx, 'size', e.target.value)} className="border rounded px-2 py-1">
+                         <option value="">Pilih Ukuran</option>
+                         {sizeOptions?.map(opt => <option key={opt} value={opt}>{opt}</option>)}
+                       </select>
+                       <input type="number" min="0" value={v.stock_quantity} onChange={e => handleVariantChange(idx, 'stock_quantity', e.target.value)} className="border rounded px-2 py-1 w-24" placeholder="Stok" />
+                       <button type="button" onClick={() => handleRemoveVariant(idx)} className="text-red-500">Hapus</button>
+                     </div>
+                   ))}
+                   <button type="button" onClick={handleAddVariant} className="bg-blue-200 text-blue-800 px-3 py-1 rounded">Tambah Varian</button>
+                 </>;
+               })()}
+               {formErrors.variants && <div className="text-red-500 text-sm mt-1">{formErrors.variants}</div>}
+             </div>
             <div className="flex gap-2 mt-4">
               <button type="submit" className="bg-blue-600 text-white px-6 py-2 rounded font-semibold hover:bg-blue-700 transition" disabled={loadingSubmit}>{loadingSubmit ? 'Menyimpan...' : 'Simpan'}</button>
               <button type="button" onClick={() => { setShowForm(false); setFormErrors({}); setImagePreviews([]); setDraggedIdx(null); }} className="bg-gray-200 text-gray-700 px-6 py-2 rounded font-semibold hover:bg-gray-300 transition" disabled={loadingSubmit}>Batal</button>
@@ -618,6 +596,12 @@ const ManajemenProduk = () => {
       <div style={{ position: 'fixed', zIndex: 9999, right: 20, top: 20 }}>
         <ToastContainer autoClose={2500} />
       </div>
+      {/* Print satuan per varian */}
+      {showPrintModal && productToPrint && (
+        <div style={{ position: 'fixed', zIndex: 9999, top: 0, left: 0, width: '100vw', height: '100vh', background: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <PrintableBarcode product={productToPrint} />
+        </div>
+      )}
     </div>
   );
 };

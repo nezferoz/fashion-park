@@ -1,111 +1,348 @@
-const userModel = require('../models/userModel');
-const bcrypt = require('bcryptjs');
+const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
-const crypto = require('crypto');
-const { sendPasswordResetEmail } = require('../utils/emailService');
+const userModel = require('../models/userModel');
+// EmailJS dihandle di frontend, tidak perlu import email service
+const tokenService = require('../services/tokenService');
 const db = require('../config/db');
+const crypto = require('crypto');
 
+// Register dengan email verification
 const register = async (req, res) => {
   try {
-    console.log('Register body:', req.body); // Debug log
-    const { name, email, password, phone, address, role } = req.body;
-    if (!name || !email || !password) {
-      return res.status(400).json({ message: 'Name, email, and password are required.' });
+    const { name, email, password, phone, address } = req.body;
+
+    // Check if user already exists
+    const existingUser = await userModel.findByEmail(email);
+    if (existingUser) {
+      return res.status(400).json({ message: 'Email sudah terdaftar' });
     }
-    const existing = await userModel.findByEmail(email);
-    if (existing) {
-      return res.status(409).json({ message: 'Email already registered.' });
-    }
-    const hashed = await bcrypt.hash(password, 10);
-    const userId = await userModel.createUser({ name, email, password: hashed, phone, address, role });
-    res.status(201).json({ message: 'User registered', user_id: userId });
-  } catch (err) {
-    console.error('Register error:', err); // Debug log
-    res.status(500).json({ message: 'Register failed', error: err.message });
+
+    // Hash password
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    // Create user (belum verified)
+    const userData = {
+      name, 
+      email, 
+      password: hashedPassword,
+      phone, 
+      address, 
+      role: 'pelanggan',
+      email_verified: false
+    };
+
+    const userId = await userModel.createUser(userData);
+
+    // Generate verification token
+    const verificationToken = tokenService.generateVerificationToken();
+    const tokenHash = tokenService.hashToken(verificationToken);
+    const expiresAt = tokenService.generateExpirationTime('verification');
+
+    // Save verification token to database
+    await db.query(
+      'INSERT INTO email_verifications (user_id, email, token, token_hash, type, expires_at) VALUES (?, ?, ?, ?, ?, ?)',
+      [userId, email, verificationToken, tokenHash, 'verification', expiresAt]
+    );
+
+    // EmailJS dihandle di frontend
+    
+    res.status(201).json({ 
+      message: 'Registrasi berhasil! Silakan cek email Anda untuk verifikasi.',
+      userId,
+      email,
+      verificationToken: verificationToken
+    });
+
+  } catch (error) {
+    console.error('Registration error:', error);
+    res.status(500).json({ message: 'Gagal melakukan registrasi', error: error.message });
   }
 };
 
+// Login dengan email verification check
 const login = async (req, res) => {
   try {
     const { email, password } = req.body;
+    
+    // Find user by email
     const user = await userModel.findByEmail(email);
     if (!user) {
-      console.error('Login error: user not found');
-      return res.status(401).json({ message: 'Invalid credentials' });
+      return res.status(401).json({ message: 'Email atau password salah' });
     }
-    const match = await bcrypt.compare(password, user.password);
-    if (!match) {
-      console.error('Login error: password mismatch');
-      return res.status(401).json({ message: 'Invalid credentials' });
+
+    // Check if email is verified
+    if (!user.email_verified) {
+      return res.status(401).json({ 
+        message: 'Email belum diverifikasi. Silakan cek email Anda atau request verifikasi ulang.',
+        needsVerification: true,
+        email: user.email
+      });
     }
-    const token = jwt.sign({ user_id: user.user_id, role: user.role }, process.env.JWT_SECRET || 'secret_anda', { expiresIn: '1d' });
-    res.json({ token, user: { user_id: user.user_id, name: user.name, email: user.email, role: user.role } });
-  } catch (err) {
-    console.error('Login error:', err);
-    res.status(500).json({ message: 'Login failed', error: err.message });
+
+    // Check if user is active
+    if (!user.isActive) {
+      return res.status(401).json({ message: 'Akun Anda telah dinonaktifkan. Hubungi admin.' });
+    }
+
+    // Verify password
+    const isValidPassword = await bcrypt.compare(password, user.password);
+    if (!isValidPassword) {
+      return res.status(401).json({ message: 'Email atau password salah' });
+    }
+
+    // Generate JWT token
+    const token = jwt.sign(
+      { 
+        user_id: user.userId, 
+        email: user.email, 
+        role: user.role,
+        email_verified: user.email_verified
+      },
+      process.env.JWT_SECRET || 'your-secret-key',
+      { expiresIn: '24h' }
+    );
+
+    // Remove password from response
+    const { password: _, ...userWithoutPassword } = user;
+
+    res.json({
+      message: 'Login berhasil',
+      token,
+      user: userWithoutPassword
+    });
+
+  } catch (error) {
+    console.error('Login error:', error);
+    res.status(500).json({ message: 'Gagal melakukan login', error: error.message });
   }
 };
 
-const forgotPassword = async (req, res) => {
+// Verify email
+const verifyEmail = async (req, res) => {
+  try {
+    const { token } = req.query;
+
+    if (!token) {
+      return res.status(400).json({ message: 'Token verifikasi diperlukan' });
+    }
+
+    // Find verification record
+    const [verifications] = await db.query(
+      'SELECT * FROM email_verifications WHERE token_hash = ? AND type = "verification" AND is_used = FALSE AND expires_at > NOW()',
+      [tokenService.hashToken(token)]
+    );
+
+    if (verifications.length === 0) {
+      return res.status(400).json({ message: 'Token verifikasi tidak valid atau sudah kadaluarsa' });
+    }
+
+    const verification = verifications[0];
+
+    // Mark verification as used
+    await db.query(
+      'UPDATE email_verifications SET is_used = TRUE, used_at = NOW() WHERE id = ?',
+      [verification.id]
+    );
+
+    // Update user as verified
+    await db.query(
+      'UPDATE users SET email_verified = TRUE, email_verified_at = NOW() WHERE userId = ?',
+      [verification.user_id]
+    );
+
+    res.json({ message: 'Email berhasil diverifikasi! Silakan login.' });
+
+  } catch (error) {
+    console.error('Email verification error:', error);
+    res.status(500).json({ message: 'Gagal memverifikasi email', error: error.message });
+  }
+};
+
+// Request password reset
+const requestPasswordReset = async (req, res) => {
   try {
     const { email } = req.body;
+    
+    if (!email) {
+      return res.status(400).json({ message: 'Email diperlukan' });
+    }
+
+    // Find user by email
     const user = await userModel.findByEmail(email);
     if (!user) {
-      // Tidak mengirim error jika user tidak ditemukan untuk alasan keamanan
+      // Don't reveal if user exists or not
       return res.json({ message: 'Jika email terdaftar, link reset password akan dikirim.' });
     }
 
-    const token = crypto.randomInt(100000, 999999).toString();
-    const expires = Date.now() + 3600000; // 1 jam
+    // Generate reset token
+    const resetToken = tokenService.generateResetToken();
+    const tokenHash = tokenService.hashToken(resetToken);
+    const expiresAt = tokenService.generateExpirationTime('reset');
 
-    const [existing] = await db.query('SELECT * FROM password_resets WHERE email = ?', [email]);
-    if (existing.length > 0) {
-      await db.query('UPDATE password_resets SET token = ?, expires = ? WHERE email = ?', [token, expires, email]);
-    } else {
-      await db.query('INSERT INTO password_resets (email, token, expires) VALUES (?, ?, ?)', [email, token, expires]);
-    }
+    // Save reset token to database
+    await db.query(
+      'INSERT INTO password_reset_tokens (user_id, email, token, token_hash, expires_at) VALUES (?, ?, ?, ?, ?)',
+      [user.userId, email, resetToken, tokenHash, expiresAt]
+    );
 
-    await sendPasswordResetEmail(email, token);
+    // EmailJS dihandle di frontend
+    
+    res.json({ 
+      message: 'Reset token berhasil dibuat', 
+      resetToken: resetToken 
+    });
 
-    res.json({ message: 'Link reset password telah dikirim ke email Anda.' });
-  } catch (err) {
-    console.error('Forgot Password error:', err);
-    res.status(500).json({ message: 'Proses lupa password gagal', error: err.message });
+  } catch (error) {
+    console.error('Password reset request error:', error);
+    res.status(500).json({ message: 'Gagal mengirim link reset password', error: error.message });
   }
 };
 
+// Reset password dengan token
 const resetPassword = async (req, res) => {
   try {
-    const { email, token, password } = req.body;
-    
-    const [savedToken] = await db.query('SELECT * FROM password_resets WHERE email = ? AND token = ?', [email, token]);
+    const { token, new_password } = req.body;
 
-    if (savedToken.length === 0) {
-      return res.status(400).json({ message: 'Token tidak valid atau email salah.' });
-    }
-    if (savedToken[0].expires < Date.now()) {
-      return res.status(400).json({ message: 'Token sudah kedaluwarsa.' });
+    if (!token || !new_password) {
+      return res.status(400).json({ message: 'Token dan password baru diperlukan' });
     }
 
-    const hashed = await bcrypt.hash(password, 10);
-    await db.query('UPDATE users SET password = ? WHERE email = ?', [hashed, email]);
-    await db.query('DELETE FROM password_resets WHERE email = ?', [email]);
+    if (new_password.length < 6) {
+      return res.status(400).json({ message: 'Password minimal 6 karakter' });
+    }
 
-    res.json({ message: 'Password berhasil direset. Silakan login kembali.' });
-  } catch (err) {
-    console.error('Reset Password error:', err);
-    res.status(500).json({ message: 'Gagal mereset password', error: err.message });
+    // Find reset token
+    const [tokens] = await db.query(
+      'SELECT * FROM password_reset_tokens WHERE token_hash = ? AND is_used = FALSE AND expires_at > NOW()',
+      [tokenService.hashToken(token)]
+    );
+
+    if (tokens.length === 0) {
+      return res.status(400).json({ message: 'Token reset password tidak valid atau sudah kadaluarsa' });
+    }
+
+    const resetToken = tokens[0];
+
+    // Hash new password
+    const hashedPassword = await bcrypt.hash(new_password, 10);
+
+    // Update user password
+    await db.query(
+      'UPDATE users SET password = ? WHERE userId = ?',
+      [hashedPassword, resetToken.user_id]
+    );
+
+    // Mark token as used
+    await db.query(
+      'UPDATE password_reset_tokens SET is_used = TRUE, used_at = NOW() WHERE id = ?',
+      [resetToken.id]
+    );
+
+    // EmailJS dihandle di frontend
+
+    res.json({ message: 'Password berhasil direset! Silakan login dengan password baru.' });
+
+  } catch (error) {
+    console.error('Password reset error:', error);
+    res.status(500).json({ message: 'Gagal mereset password', error: error.message });
   }
 };
 
-const getUserById = async (req, res) => {
+// Check email verification status
+const checkVerificationStatus = async (req, res) => {
   try {
-    const user = await userModel.findById(req.params.id);
-    if (!user) return res.status(404).json({ message: 'User not found' });
-    res.json(user);
-  } catch (err) {
-    res.status(500).json({ message: 'Server error', error: err.message });
+    const { email } = req.query;
+    
+    if (!email) {
+      return res.status(400).json({ 
+        success: false, 
+        message: 'Email diperlukan' 
+      });
+    }
+
+    const user = await userModel.findByEmail(email);
+    
+    if (!user) {
+      return res.status(404).json({ 
+        success: false, 
+        message: 'User tidak ditemukan' 
+      });
+    }
+
+    res.json({
+      success: true,
+      verified: user.email_verified === 1,
+      email: user.email
+    });
+  } catch (error) {
+    console.error('Error checking verification status:', error);
+    res.status(500).json({ 
+      success: false, 
+      message: 'Terjadi kesalahan server' 
+    });
   }
 };
 
-module.exports = { register, login, forgotPassword, resetPassword, getUserById }; 
+// Resend verification email
+const resendVerification = async (req, res) => {
+  try {
+    const { email } = req.body;
+    
+    if (!email) {
+      return res.status(400).json({ 
+        success: false, 
+        message: 'Email diperlukan' 
+      });
+    }
+
+    const user = await userModel.findByEmail(email);
+    
+    if (!user) {
+      return res.status(404).json({ 
+        success: false, 
+        message: 'User tidak ditemukan' 
+      });
+    }
+
+    if (user.email_verified === 1) {
+      return res.status(400).json({ 
+        success: false, 
+        message: 'Email sudah diverifikasi' 
+      });
+    }
+
+    // Generate new verification token
+    const token = crypto.randomBytes(32).toString('hex');
+    const tokenHash = crypto.createHash('sha256').update(token).digest('hex');
+    
+    // Save to database
+    await db.query(
+      'INSERT INTO email_verifications (user_id, email, token, token_hash, type, expires_at) VALUES (?, ?, ?, ?, ?, DATE_ADD(NOW(), INTERVAL 24 HOUR))',
+      [user.userId, email, token, tokenHash, 'verification']
+    );
+
+    // EmailJS dihandle di frontend
+    
+    res.json({
+      success: true,
+      message: 'Email verifikasi telah dikirim ulang',
+      verificationToken: token
+    });
+  } catch (error) {
+    console.error('Error resending verification:', error);
+    res.status(500).json({ 
+      success: false, 
+      message: 'Gagal mengirim email verifikasi' 
+    });
+  }
+};
+
+module.exports = {
+  register,
+  login,
+  verifyEmail,
+  requestPasswordReset,
+  resetPassword,
+  checkVerificationStatus,
+  resendVerification
+}; 

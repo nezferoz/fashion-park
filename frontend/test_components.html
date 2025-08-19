@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Components Fashion Park</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .test-section { background: #f8f9fa; padding: 20px; margin: 20px 0; border-radius: 8px; }
+        .test-link { display: inline-block; margin: 10px; padding: 15px 25px; background: #007bff; color: white; text-decoration: none; border-radius: 5px; font-weight: bold; }
+        .test-link:hover { background: #0056b3; }
+        .status { padding: 10px; margin: 10px 0; border-radius: 5px; }
+        .success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .error { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        .warning { background: #fff3cd; color: #856404; border: 1px solid #ffeaa7; }
+    </style>
+</head>
+<body>
+    <h1>🧪 Test Components Fashion Park</h1>
+    
+    <div class="test-section">
+        <h3>📋 Status Saat Ini:</h3>
+        <div id="statusContainer">
+            <div class="status warning">Loading status...</div>
+        </div>
+    </div>
+
+    <div class="test-section">
+        <h3>🔗 Test Direct Links:</h3>
+        <a href="http://localhost:3000/cart" class="test-link" target="_blank">🛒 Test Cart Page</a>
+        <a href="http://localhost:3000/pelanggan/profile" class="test-link" target="_blank">👤 Test Profile Page</a>
+        <a href="http://localhost:3000/katalog" class="test-link" target="_blank">🛍️ Test Katalog Page</a>
+        <a href="http://localhost:3000/" class="test-link" target="_blank">🏠 Test Home Page</a>
+    </div>
+
+    <div class="test-section">
+        <h3>🔐 Test Auth Status:</h3>
+        <a href="http://localhost:3000/login" class="test-link" target="_blank">🔑 Test Login Page</a>
+        <a href="http://localhost:3000/register" class="test-link" target="_blank">📝 Test Register Page</a>
+    </div>
+
+    <div class="test-section">
+        <h3>📊 Test Backend APIs:</h3>
+        <a href="http://localhost:5000/api/products" class="test-link" target="_blank">📦 Test Products API</a>
+        <a href="http://localhost:5000/api/categories" class="test-link" target="_blank">🏷️ Test Categories API</a>
+        <a href="http://localhost:5000/api/auth/check-verification" class="test-link" target="_blank">🔍 Test Auth Check API</a>
+    </div>
+
+    <div class="test-section">
+        <h3>🧹 Actions:</h3>
+        <button onclick="clearStorage()" style="padding: 10px 20px; background: #dc3545; color: white; border: none; border-radius: 5px; cursor: pointer;">🗑️ Clear localStorage</button>
+        <button onclick="checkStatus()" style="padding: 10px 20px; background: #28a745; color: white; border: none; border-radius: 5px; cursor: pointer; margin-left: 10px;">🔄 Refresh Status</button>
+    </div>
+
+    <script>
+        function updateStatus() {
+            const token = localStorage.getItem('token');
+            const user = localStorage.getItem('user');
+            
+            let statusHtml = '';
+            
+            if (token && user) {
+                try {
+                    const userData = JSON.parse(user);
+                    statusHtml = `
+                        <div class="status success">
+                            <strong>✅ User Logged In</strong><br>
+                            <strong>Name:</strong> ${userData.name || 'N/A'}<br>
+                            <strong>Email:</strong> ${userData.email || 'N/A'}<br>
+                            <strong>Role:</strong> ${userData.role || 'N/A'}<br>
+                            <strong>User ID:</strong> ${userData.userId || 'N/A'}<br>
+                            <strong>Token:</strong> ${token ? '✅ Present' : '❌ Missing'}
+                        </div>
+                    `;
+                } catch (e) {
+                    statusHtml = `
+                        <div class="status error">
+                            <strong>❌ Error Parsing User Data</strong><br>
+                            Error: ${e.message}
+                        </div>
+                    `;
+                }
+            } else {
+                statusHtml = `
+                    <div class="status warning">
+                        <strong>⚠️ No User Logged In</strong><br>
+                        <strong>Token:</strong> ${token ? '✅ Present' : '❌ Missing'}<br>
+                        <strong>User Data:</strong> ${user ? '✅ Present' : '❌ Missing'}
+                    </div>
+                `;
+            }
+            
+            document.getElementById('statusContainer').innerHTML = statusHtml;
+        }
+
+        function clearStorage() {
+            localStorage.clear();
+            updateStatus();
+            alert('localStorage cleared!');
+        }
+
+        function checkStatus() {
+            updateStatus();
+        }
+
+        // Update status every 3 seconds
+        setInterval(updateStatus, 3000);
+        updateStatus();
+    </script>
+</body>
+</html>

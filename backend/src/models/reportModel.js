@@ -2,7 +2,7 @@ const db = require('../config/db');
 
 const getAllReports = async (type) => {
   const [rows] = await db.query(
-    `SELECT r.*, u.name as user_name FROM reports r LEFT JOIN users u ON r.user_id = u.user_id WHERE r.report_type = ? ORDER BY r.report_date DESC`,
+    `SELECT r.*, u.name as user_name FROM reports r LEFT JOIN users u ON r.user_id = u.userId WHERE r.report_type = ? ORDER BY r.report_date DESC`,
     [type]
   );
   return rows;

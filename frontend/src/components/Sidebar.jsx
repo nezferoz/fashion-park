@@ -1,64 +1,64 @@
 import React from "react";
+import { FaBarcode, FaCashRegister, FaChartBar, FaClipboardList, FaCog, FaHistory, FaTachometerAlt, FaUser, FaUsersCog } from "react-icons/fa";
 import { Link, useLocation } from "react-router-dom";
-import { FaTachometerAlt, FaBoxOpen, FaCubes, FaClipboardList, FaChartBar, FaUsersCog, FaCog, FaCashRegister, FaUser, FaHistory, FaBarcode } from "react-icons/fa";
-
-function getUser() {
-  try {
-    return JSON.parse(localStorage.getItem("user"));
-  } catch {
-    return null;
-  }
-}
+import { useAuth } from "../hooks/useAuth";
 
 const menuByRole = {
   admin: [
     { to: "/admin/dashboard", label: "Dashboard", icon: <FaTachometerAlt /> },
-    { to: "/admin/produk", label: "Manajemen Produk", icon: <FaBoxOpen /> },
     { to: "/admin/pesanan", label: "Kelola Pesanan", icon: <FaClipboardList /> },
-    { to: "/admin/laporan", label: "Laporan Penjualan", icon: <FaChartBar /> },
+    { to: "/admin/user", label: "Manajemen User", icon: <FaUsersCog /> },
     { to: "/admin/riwayat", label: "Riwayat Transaksi", icon: <FaHistory /> },
-    { to: "/admin/profile", label: "Akun Saya", icon: <FaUser /> },
+    { to: "/admin/profile", label: "Akun", icon: <FaUser /> },
   ],
   pemilik: [
-    { to: "/pemilik/dashboard", label: "Dashboard KPI", icon: <FaTachometerAlt /> },
-    { to: "/pemilik/pesanan", label: "Kelola Pesanan", icon: <FaClipboardList /> },
-    { to: "/pemilik/keuangan", label: "Laporan Keuangan", icon: <FaChartBar /> },
-    { to: "/admin/user", label: "Manajemen User & Role", icon: <FaUsersCog /> },
-    { to: "/pemilik/pengaturan", label: "Pengaturan Sistem", icon: <FaCog /> },
+    { to: "/pemilik/dashboard", label: "Dashboard", icon: <FaTachometerAlt /> },
+    { to: "/pemilik/laporan-penjualan", label: "Laporan Penjualan", icon: <FaChartBar /> },
     { to: "/pemilik/riwayat", label: "Riwayat Transaksi", icon: <FaHistory /> },
-    { to: "/pemilik/profile", label: "Akun Saya", icon: <FaUser /> },
+    { to: "/pemilik/profile", label: "Akun", icon: <FaUser /> },
   ],
   kasir: [
     { to: "/kasir/transaksi", label: "POS / Checkout", icon: <FaCashRegister /> },
+    { to: "/kasir/stok", label: "Manajemen Barang & Stok", icon: <FaBarcode /> },
     { to: "/kasir/riwayat", label: "Riwayat Transaksi", icon: <FaHistory /> },
-    { to: "/kasir/profile", label: "Akun Saya", icon: <FaUser /> },
+    { to: "/kasir/profile", label: "Akun", icon: <FaUser /> },
+  ],
+  pelanggan: [
+    { to: "/pelanggan/profile", label: "Akun", icon: <FaUser /> },
+    { to: "/pelanggan/status-pesanan", label: "Pesanan Saya", icon: <FaClipboardList /> },
+    { to: "/pelanggan/riwayat", label: "Riwayat Belanja", icon: <FaHistory /> },
   ],
 };
 
 const shadowMenu = [
   "/admin/dashboard",
-  "/admin/produk",
-  "/admin/stok",
   "/admin/pesanan",
+  "/admin/user",
   "/admin/riwayat",
   "/admin/profile",
   "/pemilik/dashboard",
-  "/pemilik/pesanan",
   "/pemilik/riwayat",
   "/pemilik/profile",
   "/kasir/transaksi",
-  "/kasir/pesanan",
+  "/kasir/stok",
   "/kasir/riwayat",
-  "/kasir/profile"
+  "/kasir/profile",
+  "/pelanggan/profile",
+  "/pelanggan/status-pesanan",
+  "/pelanggan/riwayat"
 ];
 
 const customShadow = '0 4px 24px 0 rgba(30,64,175,0.18), 0 1.5px 6px 0 rgba(30,64,175,0.12)';
 
 const Sidebar = () => {
-  const user = getUser();
-  const role = user?.role;
+  const { user } = useAuth();
   const location = useLocation();
+
+  let role = user?.role?.toLowerCase();
+  // Mapping owner ke pemilik agar menu sidebar sama
+  if (role === 'owner') role = 'pemilik';
   if (!role || !menuByRole[role]) return null;
+
   return (
     <aside className="fixed top-0 left-0 h-full w-56 bg-blue-600 text-white flex flex-col shadow-lg z-40">
       <div className="flex items-center h-16 px-6 font-bold text-2xl tracking-tight border-b border-blue-700 mb-2">
@@ -80,7 +80,7 @@ const Sidebar = () => {
         ))}
       </nav>
       <div className="px-4 py-4 border-t border-blue-700">
-        <span className="block text-sm font-semibold">{user.name} ({role})</span>
+        <span className="block text-sm font-semibold">{user?.name} ({role})</span>
       </div>
     </aside>
   );

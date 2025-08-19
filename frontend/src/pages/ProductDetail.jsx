@@ -1,10 +1,12 @@
-import React, { useState, useEffect } from "react";
-import { useParams, useNavigate, useLocation } from "react-router-dom";
-import Navbar from "../components/Navbar";
+import React, { useEffect, useState } from "react";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import Footer from "../components/Footer";
-import { addToCart } from "../utils/cart";
-import api from "../utils/api";
+import ImageWithFallback from "../components/ImageWithFallback";
+import Navbar from "../components/Navbar";
 import { useLoading } from "../context/LoadingContext";
+import api from "../utils/api";
+import { addToCart } from "../utils/cart";
+import { getImageUrl, testImageUrl } from "../utils/imageUtils";
 
 const isLoggedIn = () => !!localStorage.getItem('token');
 
@@ -20,6 +22,9 @@ const ProductDetail = () => {
   const [error, setError] = useState("");
   const { setIsLoading } = useLoading();
   const [quantity, setQuantity] = useState(1);
+  const [user, setUser] = useState(null);
+  const [shippingInfo, setShippingInfo] = useState(null);
+  const [isLoadingUser, setIsLoadingUser] = useState(false);
 
   const selectedVariant = product && product.variants ? product.variants.find(v => String(v.variant_id) === selectedVariantId) : undefined;
 
@@ -42,7 +47,13 @@ const ProductDetail = () => {
         if (res.data.variants && res.data.variants.length > 0) {
           setSelectedVariantId(String(res.data.variants[0].variant_id));
         }
-      } catch {
+        
+        // Test image URL generation
+        console.log('Testing image URL generation...');
+        testImageUrl();
+        
+      } catch (err) {
+        console.error('Error fetching product:', err);
         setError("Produk tidak ditemukan");
       } finally {
         setIsLoading(false);
@@ -51,13 +62,65 @@ const ProductDetail = () => {
     fetchProduct();
   }, [id, setIsLoading]);
 
+  // Fetch user profile to compute shipping estimate based on saved address
+  // Hanya fetch jika user sudah login
+  useEffect(() => {
+    const loadUser = async () => {
+      if (!isLoggedIn()) return;
+      
+      setIsLoadingUser(true);
+      try {
+        const res = await api.get('/users/profile');
+        setUser(res.data);
+      } catch (err) {
+        console.log('User not logged in or profile fetch failed:', err);
+        setUser(null);
+      } finally {
+        setIsLoadingUser(false);
+      }
+    };
+    loadUser();
+  }, []);
+
+  // Compute shipping estimate when user and product loaded
+  useEffect(() => {
+    const computeShipping = async () => {
+      if (!user || !product || !isLoggedIn()) return;
+      if (!user.city_id) return;
+      try {
+        const weight = Number(product.weight) && Number(product.weight) > 0 ? Number(product.weight) : 1000;
+        const res = await api.post('/shipping/cost', {
+          destination_city_id: user.city_id,
+          destination_district_id: user.district_id || null,
+          destination_postal_code: user.postal_code || null,
+          weight
+        });
+        setShippingInfo(res.data?.data || null);
+      } catch (err) {
+        console.log('Shipping estimate failed:', err);
+        setShippingInfo(null);
+      }
+    };
+    computeShipping();
+  }, [user, product]);
+
   useEffect(() => {
     if (!id) return;
     const fetchImages = async () => {
       try {
         const res = await api.get(`/products/${id}/images`);
+        console.log('ProductDetail - Images fetched:', res.data);
+        console.log('ProductDetail - Images count:', res.data.length);
+        if (res.data.length > 0) {
+          console.log('ProductDetail - First image:', res.data[0]);
+          console.log('ProductDetail - Image URL will be:', getImageUrl(res.data[0].image_id));
+        }
         setImages(res.data);
-      } catch {}
+      } catch (error) {
+        console.error('ProductDetail - Error fetching images:', error);
+        // Set empty array jika gagal fetch images, jangan set error
+        setImages([]);
+      }
     };
     fetchImages();
   }, [id]);
@@ -121,53 +184,86 @@ const ProductDetail = () => {
     }
   };
 
-  // Dummy rating & review
-  const rating = 4.8;
-  const reviewCount = 713;
+  // Rating dihapus sesuai permintaan
 
   return (
     <div className="min-h-screen flex flex-col">
       <Navbar />
       <div className="flex-1 flex flex-col">
-        <div className="flex flex-col md:flex-row md:items-start gap-12 container mx-auto px-4 py-12">
+        {/* Info banner untuk user yang belum login */}
+        {!isLoggedIn() && (
+          <div className="bg-blue-50 border-b border-blue-200 py-3">
+            <div className="container mx-auto px-4 text-center">
+              <p className="text-blue-700 text-sm">
+                💡 <strong>Belum login?</strong> Anda masih bisa melihat detail produk. 
+                <button 
+                  onClick={() => navigate('/login', { state: { from: location } })}
+                  className="ml-2 text-blue-600 underline hover:text-blue-800"
+                >
+                  Login sekarang
+                </button> 
+                untuk menambahkan ke keranjang dan melakukan pembelian.
+              </p>
+            </div>
+          </div>
+        )}
+        
+
+
+        <div className="flex flex-col md:flex-row md:items-start gap-12 container mx-auto px-4 py-8">
           {/* Product Images */}
           <div className="md:w-1/2 flex flex-col items-center">
-            <div className="w-[350px] h-[350px] bg-white rounded-xl shadow flex items-center justify-center mb-4 border-2 border-blue-200">
+            <div className="w-[260px] h-[260px] sm:w-[320px] sm:h-[320px] md:w-[350px] md:h-[350px] bg-white rounded-xl shadow flex items-center justify-center mb-4 border-2 border-blue-200 overflow-hidden">
               {images.length > 0 ? (
-                <img
-                  src={`http://localhost:5000/api/products/images/${images[selectedImageIdx]?.image_id}`}
+                <ImageWithFallback
+                  src={getImageUrl(images[selectedImageIdx]?.image_id)}
                   alt={product.product_name}
                   className="object-contain w-full h-full rounded-xl"
+                  fallbackIcon="📷"
+                  fallbackText="Gambar tidak tersedia"
                 />
               ) : (
-                <div className="w-full h-full flex items-center justify-center text-gray-400">No Image</div>
+                <div className="w-full h-full flex items-center justify-center text-gray-400">
+                  <div className="text-center">
+                    <div className="text-6xl mb-2">📷</div>
+                    <div className="text-sm">Gambar tidak tersedia</div>
+                  </div>
+                </div>
               )}
             </div>
             {/* Thumbnails */}
-            <div className="flex gap-2 mt-2">
-              {images.map((img, idx) => (
-                <img
-                  key={img.image_id}
-                  src={`http://localhost:5000/api/products/images/${img.image_id}`}
-                  alt={product.product_name}
-                  className={`w-16 h-16 object-cover rounded cursor-pointer border-2 ${selectedImageIdx === idx ? "border-blue-400" : "border-blue-100"} bg-white`}
-                  onClick={() => setSelectedImageIdx(idx)}
-                />
-              ))}
-            </div>
+            {images.length > 0 && (
+              <div className="flex gap-2 mt-2">
+                {images.map((img, idx) => (
+                  <div key={img.image_id} className="w-16 h-16 rounded border-2 overflow-hidden">
+                    <ImageWithFallback
+                      src={getImageUrl(img.image_id)}
+                      alt={`${product.product_name} - thumbnail ${idx + 1}`}
+                      className={`w-full h-full object-cover cursor-pointer ${selectedImageIdx === idx ? "border-blue-400" : "border-blue-100"} bg-white`}
+                      onClick={() => setSelectedImageIdx(idx)}
+                      fallbackIcon="🖼️"
+                      fallbackText=""
+                      showFallback={false}
+                    />
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
           {/* Product Details */}
           <div className="md:w-1/2 flex flex-col justify-start">
             <h1 className="text-3xl font-bold mb-2 text-black">{product.product_name}</h1>
+            {/* Badge sederhana */}
             <div className="flex items-center gap-4 mb-4">
               <span className="bg-blue-100 text-blue-700 text-xs font-bold px-2 py-1 rounded">ORIGINAL</span>
-              <span className="text-blue-400 font-bold flex items-center">
-                {rating} <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20" className="w-5 h-5 inline"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.286 3.967a1 1 0 00.95.69h4.175c.969 0 1.371 1.24.588 1.81l-3.38 2.455a1 1 0 00-.364 1.118l1.287 3.966c.3.922-.755 1.688-1.54 1.118l-3.38-2.455a1 1 0 00-1.175 0l-3.38 2.455c-.784.57-1.838-.196-1.54-1.118l1.287-3.966a1 1 0 00-.364-1.118L2.05 9.394c-.783-.57-.38-1.81.588-1.81h4.175a1 1 0 00.95-.69l1.286-3.967z" /></svg>
-              </span>
-              <span className="text-gray-600 text-sm">{reviewCount} Penilaian</span>
             </div>
             <div className="text-2xl md:text-3xl font-bold text-blue-400 mb-4">Rp{Number(product.price).toLocaleString()}</div>
-            <div className="mb-2 text-gray-700 font-semibold">Ongkir: <span className="font-normal">Rp10.000 - Rp20.000 (estimasi)</span></div>
+            {/* Estimasi ongkir berdasarkan alamat pelanggan */}
+            {shippingInfo && isLoggedIn() && (
+              <div className="mb-2 text-gray-700 font-semibold">
+                Ongkir: <span className="font-normal">Rp{Number(shippingInfo.cost).toLocaleString()} (estimasi {shippingInfo.estimated_days} hari)</span>
+              </div>
+            )}
             <div className="mb-4 text-gray-700">{product.description}</div>
             <div className="flex items-center gap-4 mb-4">
               <span className="font-semibold text-black">Stok:</span> <span className="text-black">{selectedVariant ? selectedVariant.stock_quantity : '-'}</span>
@@ -205,22 +301,27 @@ const ProductDetail = () => {
                 )}
               </div>
             )}
+            
+            {/* Action buttons */}
             <div className="flex gap-4 mt-6">
               <button
                 className="flex-1 bg-blue-400 text-white px-6 py-4 rounded font-bold text-lg hover:bg-blue-500 transition"
                 onClick={() => handleAction('cart')}
                 disabled={!selectedVariant || selectedVariant.stock_quantity === 0}
               >
-                Masukkan Keranjang
+                {isLoggedIn() ? 'Masukkan Keranjang' : 'Login untuk Keranjang'}
               </button>
               <button
                 className="flex-1 bg-black text-white px-6 py-4 rounded font-bold text-lg hover:bg-gray-900 transition"
                 onClick={() => handleAction('buy')}
                 disabled={!selectedVariant || selectedVariant.stock_quantity === 0}
               >
-                Beli Sekarang
+                {isLoggedIn() ? 'Beli Sekarang' : 'Login untuk Beli'}
               </button>
             </div>
+            
+
+            
             {message && <div className="mt-4 text-green-600 font-semibold">{message}</div>}
             {error && <div className="mt-4 text-red-600 font-semibold">{error}</div>}
           </div>
