@@ -1,228 +1,274 @@
-# Fashion Park - Sistem Manajemen Inventori
+# 🚀 Fashion Park Inventory System
 
-## 📋 Deskripsi
-Sistem manajemen inventori untuk toko fashion dengan fitur barcode unik per ukuran produk, manajemen stok, dan laporan penjualan.
+Sistem inventory lengkap untuk bisnis fashion dengan backend Supabase (PostgreSQL) yang sudah dikonversi dari MySQL.
 
-## 🏗️ Struktur Project
+## 📋 Overview
+
+Proyek ini adalah sistem inventory fashion yang komprehensif dengan fitur:
+- **User Management** dengan role-based access control
+- **Product Management** dengan varian ukuran dan stok
+- **Transaction System** dengan berbagai metode pembayaran
+- **Inventory Tracking** dengan pergerakan stok
+- **Address Management** untuk data alamat Indonesia
+- **Row Level Security (RLS)** untuk keamanan data
+
+## 🗂️ Struktur Proyek
 
 ```
-fashion-park/
-├── backend/                 # Backend API (Node.js)
-│   ├── src/                # Source code
-│   ├── prisma/             # Database schema & migrations
-│   ├── package.json        # Backend dependencies
-│   └── db_schema.sql       # Database schema
-├── frontend/               # Frontend (React/Vue)
-│   ├── src/                # Source code
-│   ├── public/             # Static files
-│   └── package.json        # Frontend dependencies
-├── docs/                   # Dokumentasi
-└── database_migration_no_color.sql  # Script migrasi database
+├── 📁 supabase/                    # Konfigurasi Supabase
+│   ├── 📁 migrations/             # File migrasi database
+│   ├── 📄 config.toml            # Konfigurasi Supabase CLI
+│   ├── 📄 seed.sql               # Data awal
+│   └── 📄 package.json           # Dependencies Supabase
+├── 📄 supabase-schema.sql        # Skema database utama (PostgreSQL)
+├── 📄 mysql-to-supabase-converter.js  # Script konversi MySQL ke Supabase
+├── 📄 test-supabase-connection.js     # Test koneksi Supabase
+├── 📄 SUPABASE_SETUP.md          # Panduan setup lengkap
+├── 📄 env-mysql.template         # Template environment MySQL
+└── 📄 README.md                  # File ini
 ```
 
-## 🚀 Fitur Utama
+## 🎯 Fitur Utama
 
-### ✅ Manajemen Produk
-- Tambah, edit, hapus produk
-- Kategori produk
-- Gambar produk
-- Status aktif/nonaktif
+### 🔐 Authentication & Authorization
+- **Row Level Security (RLS)** untuk keamanan data
+- **Role-based access control**: admin, kasir, pemilik, pelanggan
+- **JWT-based authentication** dengan Supabase Auth
 
-### ✅ Variant Produk
-- Ukuran berbeda (S, M, L, XL, dll)
-- Barcode unik per ukuran
-- SKU per variant
-- Stok terpisah per ukuran
+### 📦 Product Management
+- **Categories** dengan deskripsi
+- **Products** dengan gambar dan deskripsi
+- **Product Variants** dengan ukuran, stok, barcode, dan SKU
+- **Stock tracking** dengan pergerakan masuk/keluar
 
-### ✅ Manajemen Stok
-- Tracking stok per ukuran
-- Alert stok menipis
-- Riwayat pergerakan stok
-- Input/output stok
+### 💳 Transaction System
+- **Multiple payment methods**: cash, digital, QRIS
+- **Payment status tracking**: pending, success, failed
+- **Order status**: menunggu pembayaran, diproses, dikirim, selesai, dibatalkan
+- **Refund system** dengan approval workflow
 
-### ✅ Sistem Barcode
-- Barcode unik per ukuran produk
-- Format: `PROD{product_id}VAR{variant_id}`
-- SKU mudah dibaca: `SKU{product_id}-{SIZE}-{variant_id}`
-- Auto-generate barcode & SKU
+### 🛒 Shopping Features
+- **Shopping cart** per user
+- **Product search** dan filtering
+- **Order history** dan tracking
 
-### ✅ Laporan & Analytics
-- Laporan penjualan
-- Laporan stok
-- Grafik penjualan
-- Export data
+### 📍 Address Management
+- **Complete Indonesian address data**: provinsi, kota, kecamatan, desa
+- **Postal code integration**
+- **Geolocation support** (latitude/longitude)
 
-## 🛠️ Tech Stack
+## 🚀 Quick Start
 
-### Backend
-- **Node.js** - Runtime environment
-- **Express.js** - Web framework
-- **MySQL** - Database
-- **Prisma** - ORM
-- **JWT** - Authentication
+### 1. Setup Environment
 
-### Frontend
-- **React/Vue.js** - Frontend framework
-- **Tailwind CSS** - Styling
-- **Axios** - HTTP client
-
-## 📦 Instalasi
-
-### Prerequisites
-- Node.js (v16+)
-- MySQL (v8.0+)
-- Git
-
-### Backend Setup
 ```bash
-cd backend
-npm install
-cp .env.example .env
-# Edit .env dengan konfigurasi database
-npm run dev
+# Copy environment template
+cp env-mysql.template .env
+
+# Edit .env dengan kredensial Anda
+nano .env
 ```
 
-### Frontend Setup
+### 2. Install Dependencies
+
 ```bash
-cd frontend
 npm install
-npm run dev
 ```
 
-### Database Setup
-```sql
--- Jalankan script migrasi
-source database_migration_no_color.sql
+### 3. Import Database ke Supabase
+
+#### Opsi A: Import Manual (Recommended)
+1. Buka [Supabase Dashboard](https://app.supabase.com)
+2. Buat proyek baru
+3. Buka SQL Editor
+4. Copy dan paste isi `supabase-schema.sql`
+5. Klik "Run"
+
+#### Opsi B: Menggunakan Supabase CLI
+```bash
+# Install Supabase CLI
+npm install -g supabase
+
+# Login dan link proyek
+supabase login
+supabase link --project-ref YOUR_PROJECT_REF
+
+# Jalankan migrasi
+npm run supabase:db:push
 ```
 
-## 🗄️ Database Schema
+### 4. Test Koneksi
 
-### Tabel Utama
-- `products` - Data produk utama
-- `product_variants` - Variant produk dengan barcode unik
-- `categories` - Kategori produk
-- `users` - User management
-- `stock_movements` - Riwayat pergerakan stok
-- `transactions` - Transaksi penjualan
+```bash
+# Test koneksi Supabase
+npm run test-supabase
+```
 
-### Struktur Barcode
-```sql
--- Format: PROD{product_id}VAR{variant_id}
--- Contoh: PROD000001VAR0001
+### 5. Convert Data dari MySQL (Opsional)
 
--- Format SKU: SKU{product_id}-{SIZE}-{variant_id}
--- Contoh: SKU000001-S-0001
+Jika Anda memiliki data MySQL yang ingin dikonversi:
+
+```bash
+# Setup environment MySQL
+cp env-mysql.template .env
+# Edit .env dengan kredensial MySQL
+
+# Jalankan konversi
+npm run convert-mysql
 ```
 
 ## 🔧 Konfigurasi
 
 ### Environment Variables
-```env
-# Database
-DATABASE_URL="mysql://user:password@localhost:3306/fashion_park"
 
-# JWT
-JWT_SECRET="your-secret-key"
+```bash
+# MySQL (untuk konversi data)
+MYSQL_HOST=localhost
+MYSQL_USER=root
+MYSQL_PASSWORD=your_password
+MYSQL_DATABASE=fashion_park
 
-# Server
-PORT=3000
-NODE_ENV=development
+# Supabase
+NEXT_PUBLIC_SUPABASE_URL=https://your-project.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key
+SUPABASE_SERVICE_ROLE_KEY=your-service-role-key
 ```
 
-## 📱 API Endpoints
+### Supabase Client Setup
 
-### Products
-- `GET /api/products` - Daftar produk
-- `POST /api/products` - Tambah produk
-- `PUT /api/products/:id` - Update produk
-- `DELETE /api/products/:id` - Hapus produk
+```javascript
+import { createClient } from '@supabase/supabase-js'
 
-### Product Variants
-- `GET /api/variants` - Daftar variant
-- `POST /api/variants` - Tambah variant
-- `GET /api/variants/barcode/:barcode` - Cari berdasarkan barcode
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
+const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
 
-### Stock Management
-- `GET /api/stock` - Status stok
-- `POST /api/stock/movement` - Input/output stok
-- `GET /api/stock/low` - Stok menipis
+export const supabase = createClient(supabaseUrl, supabaseAnonKey)
+```
+
+## 🏗️ Database Schema
+
+### Tabel Utama
+- **users** - Data pengguna dengan role dan alamat
+- **categories** - Kategori produk
+- **products** - Produk utama
+- **product_variants** - Varian produk (ukuran, stok)
+- **transactions** - Transaksi penjualan
+- **transaction_details** - Detail item transaksi
+- **cart** - Keranjang belanja
+- **stock_movements** - Tracking pergerakan stok
+- **refunds** - Pengembalian dana
+- **notifications** - Notifikasi pengguna
+
+### Tabel Alamat
+- **provinces** - Provinsi Indonesia
+- **cities** - Kota/Kabupaten
+- **districts** - Kecamatan
+- **villages** - Desa/Kelurahan
+- **postal_codes** - Kode pos
+
+## 🔐 Security Features
+
+### Row Level Security (RLS)
+- **Users**: Hanya bisa akses data sendiri
+- **Products**: Public read, admin write
+- **Transactions**: User lihat transaksi sendiri, kasir lihat semua
+- **Cart**: User hanya akses keranjang sendiri
+- **Stock**: Hanya admin yang bisa akses
+
+### Policies
+Semua tabel memiliki RLS policies yang menggunakan `auth.uid()` untuk identifikasi user dan role-based access control.
+
+## 📊 Data Sample
+
+Sistem sudah dilengkapi dengan data sample:
+- **4 kategori** produk (Pakaian Pria, Pakaian Wanita, Aksesoris, Sepatu)
+- **3 produk** dengan varian ukuran
+- **5 provinsi** dan **18 kota** di Indonesia
+- **Data alamat lengkap** untuk Kota Padang
 
 ## 🧪 Testing
 
+### Test Koneksi
 ```bash
-# Backend tests
-cd backend
-npm test
-
-# Frontend tests
-cd frontend
-npm test
+npm run test-supabase
 ```
 
-## 📊 Monitoring
-
-### Stok Menipis
+### Test Query
 ```sql
-SELECT 
-    p.product_name,
-    pv.size,
-    pv.stock_quantity,
-    pv.barcode
-FROM products p
-JOIN product_variants pv ON p.product_id = pv.product_id
-WHERE pv.stock_quantity < 10
-ORDER BY pv.stock_quantity ASC;
+-- Cek tabel yang sudah terbuat
+SELECT table_name FROM information_schema.tables 
+WHERE table_schema = 'public' 
+ORDER BY table_name;
+
+-- Cek data sample
+SELECT * FROM categories;
+SELECT * FROM products;
+SELECT * FROM product_variants;
 ```
 
-### Cari Produk berdasarkan Barcode
-```sql
-SELECT 
-    p.product_name,
-    pv.size,
-    pv.stock_quantity,
-    p.price
-FROM products p
-JOIN product_variants pv ON p.product_id = pv.product_id
-WHERE pv.barcode = 'PROD000001VAR0001';
+## 🚨 Troubleshooting
+
+### Error Umum
+1. **"relation does not exist"**
+   - Pastikan file SQL sudah dijalankan dengan benar
+   - Cek urutan eksekusi (tabel harus dibuat sebelum foreign key)
+
+2. **"permission denied"**
+   - Cek RLS policies sudah aktif
+   - Pastikan user sudah login dan memiliki role yang sesuai
+
+3. **"duplicate key value"**
+   - Gunakan `ON CONFLICT DO NOTHING` untuk data sample
+   - Atau hapus data lama terlebih dahulu
+
+### Reset Database
+```bash
+# Jika menggunakan CLI
+npm run supabase:db:reset
+
+# Jika manual, hapus semua tabel dan jalankan ulang
+DROP SCHEMA public CASCADE;
+CREATE SCHEMA public;
+-- Jalankan ulang supabase-schema.sql
 ```
 
-## 🔄 Migrasi Database
+## 📚 Documentation
 
-Untuk mengubah struktur database agar mendukung barcode per ukuran:
-
-1. **Backup database**
-2. **Jalankan script migrasi:**
-   ```sql
-   source database_migration_no_color.sql
-   ```
-3. **Test dengan data sample**
-4. **Update aplikasi web**
-
-## 📝 Changelog
-
-### v1.0.0
-- ✅ Sistem manajemen produk dasar
-- ✅ Barcode unik per ukuran
-- ✅ Manajemen stok
-- ✅ Laporan penjualan
+- **📖 [SUPABASE_SETUP.md](SUPABASE_SETUP.md)** - Panduan setup lengkap
+- **🔗 [Supabase Documentation](https://supabase.com/docs)** - Dokumentasi resmi
+- **📋 [PostgreSQL Documentation](https://www.postgresql.org/docs/)** - Referensi database
 
 ## 🤝 Contributing
 
-1. Fork repository
-2. Buat feature branch (`git checkout -b feature/AmazingFeature`)
-3. Commit changes (`git commit -m 'Add some AmazingFeature'`)
+1. Fork proyek ini
+2. Buat branch fitur baru (`git checkout -b feature/AmazingFeature`)
+3. Commit perubahan (`git commit -m 'Add some AmazingFeature'`)
 4. Push ke branch (`git push origin feature/AmazingFeature`)
 5. Buat Pull Request
 
 ## 📄 License
 
-Distributed under the MIT License. See `LICENSE` for more information.
+Proyek ini dilisensikan di bawah MIT License - lihat file [LICENSE](LICENSE) untuk detail.
 
-## 📞 Contact
+## 📞 Support
 
-- **Email:** your-email@example.com
-- **Project Link:** [https://github.com/yourusername/fashion-park](https://github.com/yourusername/fashion-park)
+Jika mengalami masalah:
+1. Cek error message di Supabase Dashboard
+2. Verifikasi struktur tabel di Table Editor
+3. Test query sederhana untuk memastikan koneksi
+4. Cek RLS policies di Authentication menu
+5. Buat issue di repository ini
+
+## 🎉 Selamat!
+
+Database Fashion Park Inventory System sudah siap digunakan di Supabase! 
+
+**Langkah selanjutnya:**
+1. Test aplikasi frontend dengan database baru
+2. Sesuaikan kode aplikasi dengan struktur tabel baru
+3. Test fitur authentication dan authorization
+4. Deploy ke production
 
 ---
 
-**Fashion Park** - Sistem manajemen inventori yang efisien dengan barcode unik per ukuran! 🏷️ 
+**Catatan:** Semua file sudah dioptimasi untuk Supabase dan PostgreSQL. Tidak perlu konversi manual lagi. 

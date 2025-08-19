@@ -1,0 +1,31 @@
+# =====================================================
+# FASHION PARK INVENTORY SYSTEM - ENVIRONMENT VARIABLES
+# Copy this file to .env and fill in your values
+# =====================================================
+
+# Server Configuration
+PORT=3000
+NODE_ENV=development
+
+# Database Configuration
+DB_HOST=localhost
+DB_USER=root
+DB_PASSWORD=your_mysql_password
+DB_NAME=fashion_park
+DB_PORT=3306
+
+# JWT Configuration
+JWT_SECRET=your-super-secret-jwt-key-change-this-in-production
+
+# Optional: External Access (for Ngrok)
+EXTERNAL_URL=https://your-ngrok-url.ngrok.io
+
+# Optional: File Upload
+UPLOAD_PATH=./uploads
+MAX_FILE_SIZE=5242880
+
+# Optional: Email Configuration (if needed later)
+# SMTP_HOST=smtp.gmail.com
+# SMTP_PORT=587
+# SMTP_USER=your-email@gmail.com
+# SMTP_PASS=your-app-password
