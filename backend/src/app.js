@@ -83,6 +83,16 @@ app.use('/api/binderbyte', binderbyteRoutes);
 app.use('/api/api-keys', apiKeyRoutes);
 
 
+// Health check endpoint for Railway
+app.get('/health', (req, res) => {
+  res.status(200).json({ 
+    status: 'healthy', 
+    timestamp: new Date().toISOString(),
+    service: 'Fashion Park API',
+    version: '1.0.0'
+  });
+});
+
 // Routing dasar
 app.get('/', (req, res) => {
   res.json({ message: 'API Distro Fashion Park ready!' });
